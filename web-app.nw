@@ -469,7 +469,7 @@ rather than definitions.
 <<web-app.ss>>=
 <<Web App License>>
 
-;(let ()
+(let ()
 
 (import 
 	<<Imports>>)
@@ -483,7 +483,11 @@ rather than definitions.
 (define (initialize-server)
 	<<Initialization>>)
 
-;)
+)
+
+(scheme-start 
+	(lambda fns 
+		(initialize-server)))
 @
 
 We need to make sure that we initialize the server api the way we 
@@ -510,7 +514,7 @@ today's high memory systems. At least, I hope not.
 Now we can safely start the mod\_lisp server.
 
 <<Initialization>>=
-(start-modlisp-server/synchronous 3000)
+(start-modlisp-server 3000)
 @
 
 Right now, the server is meant to be launched using something like 
