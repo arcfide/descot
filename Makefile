@@ -1,7 +1,6 @@
-FILES=rdf-util.ss rdf2html.ss web-app.ss rdf-print.ss web-gen.ss srdf.ss \
-    server.ss
-NW_FILES=rdf-util.nw rdf2html.nw web-app.nw rdf-print.nw web-gen.nw srdf.nw \
-    server.nw
+FILES=rdf/rdf-to-sxml.sls rdf/turtle-output.sls rdf/utilities.sls \
+	web/generators.sls web/utilities.ss \
+	server.sls web-app.ss web-param.ss srdf.sls
 
 .SUFFIXES: .so .ss .sls .nw
 
@@ -33,10 +32,10 @@ clean_www:
 	rm -rf www_static
 
 .nw.ss: 
-	notangle -R$@ -t2 $< > $@
+	notangle -R$(@F) -t2 $< > $@
 
 .nw.sls:
-	notangle -R$@ -t2 $< > $@
+	notangle -R$(@F) -t2 $< > $@
 
 .ss.so:
 	@echo '(compile-file "$*")' | scheme -q
