@@ -478,16 +478,17 @@ rather than definitions.
 
 <<Pages>>
 
-<<Handlers>>
-
 (define (initialize-server)
 	<<Initialization>>)
 
-)
+<<Handlers>>
 
 (scheme-start 
 	(lambda fns 
 		(initialize-server)))
+
+)
+
 @
 
 We need to make sure that we initialize the server api the way we 
