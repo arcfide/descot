@@ -5,7 +5,7 @@ ${FILENAME}.dvi: ${FILENAME}.tex ${DEPS}
 	tex ${FILENAME}.tex
 
 ${FILENAME}.ps: ${FILENAME}.dvi 
-	dvips ${FILENAME}.dvi
+	dvips -o %< ${FILENAME}.dvi
 
 ${FILENAME}.pdf: ${FILENAME}.ps 
 	ps2pdf ${FILENAME}.ps

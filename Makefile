@@ -2,6 +2,10 @@ FILES=rdf/rdf-to-sxml.sls rdf/turtle-output.sls rdf/utilities.sls \
 	web/generators.sls web/utilities.ss \
 	server.sls web-app.ss web-param.ss srdf.sls
 
+NW_FILES=rdf/rdf-to-sxml.nw rdf/turtle-output.nw rdf/utilities.nw \
+	web/generators.nw \
+	server.nw web-app.nw srdf.nw
+
 .SUFFIXES: .so .ss .sls .nw
 
 build: ${FILES}
