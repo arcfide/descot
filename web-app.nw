@@ -469,6 +469,8 @@ rather than definitions.
 <<web-app.ss>>=
 <<Web App License>>
 
+(load-shared-object "/usr/local/lib64/get_errno.so")
+
 (let ()
 
 (import 

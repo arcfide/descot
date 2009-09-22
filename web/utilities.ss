@@ -21,7 +21,7 @@
 (library (arcfide descot web utilities)
   (export xhtml-decl html head body title div-elem h1 h2 h3 p input button ul ol li a
    form link make-column-table-with-size categories->links 
-   matching-libraries capitalize-string
+   matching-libraries capitalize-string html-decl
    make-search-proc)
 	(import
 		(rnrs base)
@@ -40,6 +40,12 @@
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"
     \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">
 ")
+
+(define html-decl
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"
+        \"http://www.w3.org/TR/html4/strict.dtd\">
+")
+
 
 (define html
   (lambda (head body)

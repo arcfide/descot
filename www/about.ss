@@ -17,11 +17,10 @@
 ;;; TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 ;;; PERFORMANCE OF THIS SOFTWARE.
 
-(module ()
-  (import scheme)
-  (import descot-web-generators)
-  (import descot-web-parameters)
-  (import descot-web-utilities)
+(import 
+  	(arcfide descot web generators)
+  	(arcfide descot web parameters)
+  	(arcfide descot web utilities))
 
 (define about-page
   (lambda ()
@@ -147,9 +146,8 @@
          lot of cool things in it, but this isn't it! We'll be 
 	 adding much more in the days ahead."))))
 
-(call-with-output-file (string-append descot-web-docroot "/about.xhtml")
+(printf "~a~%" (string-append (descot-web-docroot) "/about.html"))
+(call-with-output-file (string-append (descot-web-docroot) "/about.html")
   (lambda (port)
-    (write-html-page about-page port))
+    (put-string port (write-html-page (about-page))))
   'replace)
-
-)

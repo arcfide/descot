@@ -15,12 +15,13 @@ footers.
   (export write-html-page descot-wrapper)
 	(import
 		(rnrs base)
-		(rnrs io ports)
-		(rnrs io simple)
+		(except (rnrs io ports) current-output-port)
+		(except (rnrs io simple) current-output-port)
+		(rnrs control)
 		(arcfide descot web parameters)
 		(arcfide descot web utilities)
 		(oleg sxml-to-html)
-		(only (scheme) with-output-to-string))
+		(only (scheme) with-output-to-string parameterize current-output-port))
 
 <<Writing>>
 
@@ -45,8 +46,9 @@ it according to normal W3C standards, all sent to the given port.
 (define (write-html-page code)
 	(with-output-to-string
 		(lambda ()
-			(put-string (current-output-port) xhtml-decl)
+			(put-string (current-output-port) html-decl)
 			(sxml->html code))))
+
 @
 
 \section{Wrapping Pages}

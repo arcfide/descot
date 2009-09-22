@@ -1,4 +1,4 @@
-#! /usr/local/bin/petite --script
+#! /usr/local/bin/scheme-script
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Build Static Descot Web Pages
 ;;; 
@@ -17,50 +17,10 @@
 ;;; OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 ;;; TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 ;;; PERFORMANCE OF THIS SOFTWARE.
-
-(eval-when (compile) 
-  (generate-inspector-information #f)
-  (optimize-level 3))
-
-(let ()
-  (import scheme)
-  (include "lib/syn-param.ss")
-  (include "lib/srfi-8.ss")
-  (include "lib/foof-loop.ss")
-  (include "lib/nested-foof-loop.ss")
-  (include "lib/check-arg.ss")
-  (include "lib/let-opt.ss")
-  (include "lib/char-utils.ss")
-  (include "lib/srfi-14.ss")
-  (include "lib/srfi-13.ss")
-  (include "lib/srfi-23.ss")
-  (include "lib/srfi-1.ss")
-  (include "lib/srfi-45.ss")
-  (include "lib/stream.ss")
-  (include "lib/matcomb.ss")
-  (include "lib/mattext.ss")
-  (include "lib/perror.ss")
-  (include "lib/parcomb.ss")
-  (include "lib/partext.ss")
-  (include "lib/uri.ss")
-  (include "lib/rdf.ss")
-  (include "lib/rdf-list-graph.ss")
-  (include "lib/rdf-map.ss")
-  (include "lib/rdf-turtle-parser.ss")
-  (include "lib/myenv-chez.ss")
-  (include "lib/oleg-util.ss")
-  (include "lib/oleg-sxml-tree-trans.ss")
-  (include "lib/oleg-sxml-to-html.ss")
-  (include "rdf-util.ss")
-  (include "web-param.ss")
-  (include "web-util.ss")
-  (include "web-gen.ss")
-
-  (import descot-web-parameters)
-  (import foof-loop)
-  (import nested-foof-loop)
+(import (chezscheme) (riastradh foof-loop) (arcfide descot web parameters))
 
 (meta define script-root "www")
+(define descot-web-docroot (make-parameter "www_static"))
 
 (meta define valid-script?
   (lambda (fname)
@@ -78,10 +38,11 @@
     (with-syntax ([(f1 ...) (script-pages script-root)])
       #'(begin (include f1) ...))))
 
+(when (pair? (command-line-arguments))
+	(descot-web-docroot (car (command-line-arguments))))
+
 (include-script-files)
 
 (printf "Done!~%")
 
 (exit)
-
-)

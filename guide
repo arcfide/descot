@@ -4,6 +4,5 @@ make web-app.ss
 
 (import (arcfide ffi-bind parameters))
 (ffi-build-path "/home/arcfide/code/tmp_build")
-(load "web-param.ss")
 (load "web-app.ss")
 

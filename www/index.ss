@@ -17,18 +17,17 @@
 ;;; TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 ;;; PERFORMANCE OF THIS SOFTWARE.
 
-(module ()
-  (import scheme)
-  (import descot-web-generators)
-  (import descot-web-parameters)
+  (import 
+  	(arcfide descot web generators)
+  	(arcfide descot web parameters))
 
 (define home-page
   (lambda ()
     (descot-wrapper "" descot-stylesheet)))
 
-(call-with-output-file (string-append descot-web-docroot "/index.xhtml")
-  (lambda (port)
-    (write-html-page home-page port))
-  'replace)
 
-)
+(printf "~a~%" (string-append (descot-web-docroot) "/index.html"))
+(call-with-output-file (string-append (descot-web-docroot) "/index.html")
+  (lambda (port)
+    (put-string port (write-html-page (home-page))))
+  'replace)
