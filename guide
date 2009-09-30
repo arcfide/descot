@@ -2,6 +2,14 @@ win scheme
 
 make web-app.ss
 
+make server
+petite descot-web-server.so
+(exit)
+
+mtn status
+mtn list unknown
+mtn add build.ss BUILD_LIBS
+
 (import (arcfide ffi-bind parameters))
 (ffi-build-path "/home/arcfide/code/tmp_build")
 (load "web-app.ss")

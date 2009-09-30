@@ -4,12 +4,14 @@ FILES=rdf/rdf-to-sxml.sls rdf/turtle-output.sls rdf/utilities.sls \
 NW_FILES=rdf/rdf-to-sxml.nw rdf/turtle-output.nw rdf/utilities.nw \
 	web/generators.nw server.nw web-app.nw srdf.nw
 
+DEPSFILE=BUILD_LIBS
+
 .SUFFIXES: .so .ss .sls .nw
 
 build: ${FILES}
 
 www: web-gen.ss
-	build-pages.ss
+	build-pages.ss 
 
 www_sacrideo: web-gen.ss
 	cp web-param.ss web-param.ss.stock
@@ -17,11 +19,8 @@ www_sacrideo: web-gen.ss
 	build-pages.ss
 	mv web-param.ss.stock web-param.ss
 
-sacrideo: build
-	cp web-param.ss web-param.ss.stock
-	patch web-param.ss web-param-sacrideo.patch
-	@echo '(compile-file "web-app")' | scheme -q
-	mv web-param.ss.stock web-param.ss
+server: build
+	build.ss descot-web-server.so build ${DEPSFILE}
 
 docs: 
 	noweave -delay -t2 ${NW_FILES} > doc/tech/main.tex
