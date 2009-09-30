@@ -50,6 +50,7 @@
 (srfi :0)
 (oleg cgi processing)
 (arcfide errno)
+(arcfide ffi-bind parameters)
 (arcfide ffi-bind)
 (arcfide sockets)
 (riastradh parscheme)

@@ -15,6 +15,7 @@
 (unless (file-exists? build-dir) (mkdir build-dir))
 
 (ffi-build-path build-dir)
+(library-extensions '(".chezscheme.sls" ".sls" ""))
 (build-program out-file build-dir inputs)
 
 (exit 0)
