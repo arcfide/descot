@@ -10,15 +10,6 @@ DEPSFILE=BUILD_LIBS
 
 build: ${FILES}
 
-www: web-gen.ss
-	build-pages.ss 
-
-www_sacrideo: web-gen.ss
-	cp web-param.ss web-param.ss.stock
-	patch web-param.ss web-param-sacrideo.patch
-	build-pages.ss
-	mv web-param.ss.stock web-param.ss
-
 server: build
 	build.ss descot-web-server.so build ${DEPSFILE}
 
@@ -28,6 +19,9 @@ docs:
 clean: 
 	rm -f ${FILES} 
 	rm -f *.so
+	rm -f *.c
+	rm -f descot-web-server
+	rm -rf www_static
 
 clean_www:
 	rm -rf www_static
