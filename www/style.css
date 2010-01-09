@@ -74,6 +74,8 @@ ul.authors { list-style: none; }
 
 p { text-align: justify; }
 
+dl { text-align: justify; }
+
 a { color: rgb(240,220,0); text-decoration: none; }
 a:hover { color: white; text-decoration: underline; }
 
