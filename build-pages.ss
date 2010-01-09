@@ -1,4 +1,4 @@
-#! /usr/local/bin/scheme-script
+#! /usr/bin/env scheme-script
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Build Static Descot Web Pages
 ;;; 
