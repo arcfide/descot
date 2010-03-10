@@ -32,7 +32,7 @@
 		(riastradh schemantic-web rdf-list-graph))
 
 (define descot-path-prefix "/descot")
-(define descot-static-prefix descot-path-prefix)
+(define descot-static-prefix ".")
 (define descot-about-path (string-append descot-path-prefix "/about.html"))
 (define descot-blog-path (string-append descot-path-prefix "/blog.html"))
 (define descot-browse-path (string-append descot-path-prefix "/db/browse"))

@@ -1,0 +1,65 @@
+\ifx\eplain\undefined \input eplain \fi
+\input figplace
+\input graphicx
+
+\newcount\figurec
+
+\def\figplace#1#2#3{\advance\figurec by 1 \setbox0=\vbox{%
+  \hrule
+  \medskip
+  \centerline{#1}
+  \medskip
+  \hrule
+  \medskip
+  \definexref{#3}{\the\figurec}{figure}
+  \centerline{Figure \the\figurec . #2}}
+  \addfigure0}
+
+\def\figureword{Figure}
+
+\font\titlef = cmr17
+\font\chaptf = cmr14
+\font\sectf = cmb12
+\font\subsectf = cmb10
+\font\authorf = cmr14
+\font\contactf = cmb12
+
+\def\title#1{\def\titlec{#1}}
+\def\author#1{\def\authorc{#1}}
+\def\contact#1{\def\contactc{#1}}
+
+\def\copyrighttext{%
+Copyright $\copyright$ 2010 \authorc . 
+All Rights Reserved.}
+
+\def\maketitlepage{%
+  \null\vfill
+  \centerline{\titlef \titlec}
+  \vskip 24pt
+  \centerline{\authorf \authorc}
+  \vskip 18pt
+  \centerline{\contactf \contactc}
+  \vfill
+  \copyrighttext\par\break}
+  
+\def\maketitle{%
+  \centerline{\titlef \titlec}
+  \vskip 18pt
+  \centerline{\authorf \authorc}
+  \vskip 12pt
+  \centerline{\contactf \contactc}
+  \vskip 24pt}
+  
+\def\abstract{%
+  \vfill\break
+  \centerline{\chaptf Abstract}
+  \medskip\bgroup\nobreak\noindent\narrower}
+\def\endabstract{\egroup\bigskip}
+
+\def\chapter#1#2{%
+  \vfill\break\null\vskip 48pt
+  \centerline{\chaptf #1}\bigskip\bigskip}
+\def\section#1#2{%
+  \bigskip\noindent{\sectf #1}\smallskip\nobreak\noindent}
+\def\subsection#1#2{%
+  \medskip\noindent{\subsectf #1}\smallskip\nobreak\noindent}
