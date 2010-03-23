@@ -158,6 +158,12 @@ dscts:email	rdf:type	rdf:Property;
 		rdfs:comment	"Person's Email Address";
 		rdfs:domain	dscts:Person;
 		rdfs:range	xsd:string .
+
+# Retrieval-method Properties
+dscts:url       rdf:type        rdf:Property;
+        rdfs:label      "URI";
+        rdfs:comment    "URI to external resources";
+        rdfs:domain     dscts:Retrieval-method .
 			
 # CVS Properties
 dscts:cvs-root		rdf:type	rdf:Property;
