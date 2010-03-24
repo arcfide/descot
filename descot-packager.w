@@ -148,4 +148,61 @@ A string reference is expected to be an absolute reference."
       "expected a string, list, or symbol, but found ~s"
       subject)])))
 
+(@ "The following procedures enforce the naming conventions mentioned
+in the next section."
+
+(@c
+(meta define (class-parameter class)
+  (datum->syntax class
+    (string->symbol (format "~a-root" (syntax->datum class)))))
+(meta define (class-default-properties class)
+  (datum->syntax class
+    (string->sybmol (format "~a-default-properties" (syntax->datum class)))))
+(meta define (class-type class)
+  (datum->syntax class
+    (string->symbol (format "dscts:~a" (syntax->datum class)))))))
+
+(@ "With the above |define-class| syntax, we can then trivially
+define each of the classes. However, all of the classes have a 
+similar naming convention, so to enforce this, the following bulk
+class definition syntax should be used. Basically, each class should
+be a capitalized term, which forms the prefix for the two parameters,
+namely, |root| and |default-properties|. Each should be prefixed
+with the |Class-|. Finally, I assume that each class definition has
+a node name defined by |dscts:Class| which is the type of the class
+in RDF."
+
+(@c
+(define-syntax define-classes
+  (lambda (x)
+    (syntax-case x ()
+      [(_ class)
+       (with-syntax ([param (class-parameter #'class)]
+                     [def-prop (class-default-properties #'class)]
+                     [type (class-type #'class)])
+         #'(define-class class param def-prop type))]
+      [(_ class classes ...)
+       (with-syntax ([param (class-parameter #'class)]
+                     [def-prop (class-default-properties #'class)]
+                     [type (class-type #'class)])
+         #'(begin
+             (define-class class param def-prop type)
+             (define-classes classes ...)))])))))
+
+(@ "Now I am free to define a nice looking set of classes that were
+mentioned in the ealier section."
+
+(@c
+(define-classes
+  Library
+  Binding
+  License
+  Person
+  Retrieval-method
+  Archive
+  Single-file
+  SCM
+  CVS
+  Implementation)))
+
 )
