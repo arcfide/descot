@@ -157,7 +157,7 @@ in the next section."
     (string->symbol (format "~a-root" (syntax->datum class)))))
 (meta define (class-default-properties class)
   (datum->syntax class
-    (string->sybmol (format "~a-default-properties" (syntax->datum class)))))
+    (string->symbol (format "~a-default-properties" (syntax->datum class)))))
 (meta define (class-type class)
   (datum->syntax class
     (string->symbol (format "dscts:~a" (syntax->datum class)))))))
