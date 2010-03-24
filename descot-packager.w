@@ -41,7 +41,7 @@ properties.
   (license isc-license)
   (exports tangle me silly)
   (location
-    (Gopher *
+    (Gopher _
       (uri \"gopher://gopher.sacrideo.us/9chezweb/cheztangle.ss\"))))
 |endverbatim
 \\medskip")
@@ -196,6 +196,7 @@ mentioned in the ealier section."
 (define-classes
   Library
   Binding
+  Syntax
   License
   Person
   Retrieval-method
@@ -204,5 +205,199 @@ mentioned in the ealier section."
   SCM
   CVS
   Implementation)))
+
+(@* "Properties"
+"Properties accept as their arguments forms which are meant to 
+indicate the type of object associated with a given property. At
+the root, a property establishes some property associate with the
+object created from its arguments:
+
+\\medskip
+\\verbatim
+(<property> <object> ...)
+|endverbatim
+\\medskip
+
+\\noindent The |property| will be some URI, and the object will be
+some proper object list. In order to define a property, we are
+defining some syntax, which accepts some syntax for the arguments
+and then performs some transformation on it to build the object.
+Additionally, we provide the property's URI."
+
+(@c
+(define-syntax define-property
+  (syntax-rules ()
+    [(_ name uri clause ...)
+     (define-syntax name
+       (property-syntax-rules uri () clause ...))]))))
+
+(@ "The |property-syntax-rules| macro makes sure to check the input
+clause forms, which should be one of the following forms:
+
+\\medskip
+\\verbatim
+((e ...) test? body)
+((e ...) body)
+|endverbatim
+\\medskip
+
+\\noindent It then creates a |syntax-rules| form of the following
+shape:
+
+\\medskip
+\\verbatim
+(syntax-rules ()
+  [(_ e ...) test? `(,uri . ,body)] ...)
+|endverbatim
+"
+
+(@c
+(define-syntax property-syntax-rules
+  [(_ uri (((e ...) pass? body) ...))
+   (syntax-rules ()
+     [(_ e ...) pass?
+      `(,uri . ,body)]
+     ...)]
+  [(_ uri (checked ...) ((e ...) test? body) rest ...)
+   (property-syntax-rules uri
+     (checked ... ((e ...) test? body))
+     rest ...)]
+  [(_ uri (checked ...) ((e ...) body) rest ...)
+   (property-syntax-rules uri
+     (checked ... ((e ...) #t body))
+     rest ...)])))
+
+(@* "Grounding/resolving relative references."
+ "Properties will usually have to ground their relative object
+references in some way or another based on some root URI. The 
+following procedure can help with that."
+
+(@c
+(define (resolve root relative)
+  (assert (string? root))
+  (assert (or (string? relative)
+              (pair? relative)
+              (symbol? relative)))
+  (cond
+    [(string? relative) (string-append root relative)]
+    [(pair? relative) (format "~a~{~a~^/~}" root relative)]
+    [(symbol? relative) (format "~a~a" root relative)]))))
+
+(@* "Typed Properties"
+"While using |define-property| by itself is okay, there are a 
+number of common idioms for properties that show up, so rather than
+writing each of these repeatedly, I define some of these patterns
+here.")
+
+(@ "|define-string-property| defines a property that expects a
+single string argument as the object."
+
+(@c
+(define-syntax define-string-property
+  (syntax-rules ()
+    [(_ name uri)
+     (define-property name uri 
+       [(s) (string? (syntax->datum #'s))  `($ ,s)])]))))
+
+(@ "|define-date-property| defines a property that expects a
+single date string in a standard RDF dateTime format."
+
+(@c
+(define-syntax define-date-property
+  (syntax-rules ()
+    [(_ name uri)
+     (define-property name uri
+       [(s) (string? (syntax->datum #'s))
+        `(^ ,s ,(xsd "dateTime"))])]))))
+
+(@ "A special case of the date format is the Year format, and so I
+define |define-year-property| to handle cases that expect the year."
+
+(@c
+(define-syntax define-year-property
+  (syntax-rules ()
+    [(_ name uri)
+     (define-property name uri
+       [(y) (integer? (syntax->datum #'y))
+        `(^ ,(number->string y) ,(xsd "gYear"))])]))))
+
+(@ "|define-node-proprety| defines a proprety that expects a single
+node."
+
+(@c
+(define-syntax define-node-property
+  (syntax-rules ()
+    [(_ name uri root)
+     (define-property name uri
+       [(n)
+        (let ([x (syntax->datum #'n)])
+          (or (string? x) (pair? x) (symbol? x)))
+        (resolve root n)])]))))
+
+(@ "|define-list-property| defines a property that expects some list
+of objects of a certain, specified type. The programmer provides a
+predicate and a creator that creates the right objects from the input."
+
+(@c
+(deifne-syntax define-list-property
+  (syntax-rules ()
+    [(_ name uri test? make)
+     (define-property name uri
+       [(e1 e2 ...)
+        (for-all test? #'(e1 e2 ...))
+        `(,(make e1) ,(make e2) ...)])]))))
+
+(@ "|define-node-list-property| defines a property that expexts a
+list of nodes as its objects."
+
+(@c
+(define-syntax define-node-list-property
+  (syntax-rules ()
+    [(_ name uri root)
+     (define-list-property name uri
+       (lambda (x)
+         (let ([x (syntax->datum x)])
+           (or (string? x) (pair? x) (symbol? x))))
+       (lambda (x) (resolve root x)))]))))
+
+(@ "|define-string-list-proprety| defines a property that expects
+one or more strings as objects."
+
+(@c
+(define-syntax define-string-list-property
+  (syntax-rules ()
+    [(_ name uri)
+     (define-list-property name uri
+       (lambda (x) (string? (syntax->datum x)))
+       (lambda (x) `($ ,x)))]))))
+
+(@* "Descot Property Definitions"
+"The following are the defined properties for Descot."
+
+(@c
+(define-string-property name dscts:name)
+(define-node-property alternatives dscts:alts default-root)
+(define-string-property description dscts:desc)
+(define-node-property homepage dscts:homepage default-root)
+(define-node-list-property import dscts:deps Library-root)
+(define-string-list-property alternative-names dscts:names)
+(define-node-list-property export dscts:exports Binding-root)
+(define-node-property license dscts:license License-root)
+(define-node-list-property authors dscts:authors Person-root)
+(define-date-property creation dscts:creation)
+(define-date-property modified dscts:modified)
+(define-node-property contact dscts:contact Person-root)
+(define-node-property implementation dscts:implementation
+  Implementation-root)
+(define-string-property version dscts:version)
+(define-node-property location dscts:location Retrieval-method-root)
+(define-string-list-property categories dscts:categories)
+(define-year-property copyright-year dscts:copyright-year)
+(define-node-property copyright-owner dscts:copyright-owner Person-root)
+(define-string-property email dscts:email)
+(define-string-property url dscts:url)
+(define-string-property cvs-root dscts:cvs-root)
+(define-string-property cvs-module dscts:cvs-module)))
+
 
 )
