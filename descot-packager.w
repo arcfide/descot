@@ -52,7 +52,7 @@ our Descot packages."
 (arcfide descot packager environment)
 (export Library Binding License Person Retrieval-method Archive
         Single-file SCM CVS Implementation)
-(import (chezscheme))
+(import (except (chezscheme) define-property import))
 
 (@* "Class Definitions"
 "The Descot metalanguage defines the following classes:
@@ -95,16 +95,26 @@ globally."
   (syntax-rules ()
     [(_ name subject-root default-properties class-type)
      (begin
-       (@< |Define subject root parameter|)
-       (@< |Define default properties parameter|)
+       (@< |Define subject root parameter| subject-root)
+       (@< |Define default properties parameter| default-properties)
        (...
          (define-syntax name
            (syntax-rules ()
              [(_ subject property ...)
-              `(,(@< |Construct subject|)
+              `(,(@< |Construct subject| subject-root 'subject name)
                 (type class-type)
                 property ...
                 . ,(default-properties))]))))]))))
+
+(@ "Every parameter that is create should have a default failback.
+This is the |default-root| parameter."
+
+(@c
+(define default-root
+  (make-parameter ""
+    (lambda (s)
+      (assert (string? s))
+      s)))))
 
 (@ "The subject root parameter should contain a string that is the
 default base root for any relatively defined subject with the given
@@ -114,8 +124,7 @@ class."
 (define subject-root
   (make-parameter (default-root)
     (lambda (x)
-      (unless (string? x)
-        (errorf 'subject-root "expected a URI string, found ~s" x))
+      (assert (string? x))
       x)))))
 
 (@ "The default properties parameter should be bound in the prelude
@@ -127,9 +136,7 @@ class."
 (define default-properties
   (make-parameter '()
     (lambda (x)
-      (unless (or (null? x) (pair? x))
-        (errorf 'default-properties 
-          "Expected a list of properties, found ~s" x))
+      (assert (or (null? x) (pair? x)))
       x)))))
 
 (@ "When a class form is used, the subject may be in either a string,
@@ -142,7 +149,8 @@ A string reference is expected to be an absolute reference."
 (cond
   [(string? subject) subject]
   [(pair? subject) (format "~a~{~a~^/~}" (subject-root) subject)]
-  [(symbol? subject) (format "~a~a" (subject-root) subject)]
+  [(symbol? subject) 
+   (if (eq? '* subject) '* (format "~a~a" (subject-root) subject))]
   [else 
     (errorf 'name
       "expected a string, list, or symbol, but found ~s"
@@ -253,19 +261,20 @@ shape:
 
 (@c
 (define-syntax property-syntax-rules
-  [(_ uri (((e ...) pass? body) ...))
-   (syntax-rules ()
-     [(_ e ...) pass?
-      `(,uri . ,body)]
-     ...)]
-  [(_ uri (checked ...) ((e ...) test? body) rest ...)
-   (property-syntax-rules uri
-     (checked ... ((e ...) test? body))
-     rest ...)]
-  [(_ uri (checked ...) ((e ...) body) rest ...)
-   (property-syntax-rules uri
-     (checked ... ((e ...) #t body))
-     rest ...)])))
+  (syntax-rules ()
+    [(_ uri (((e ...) pass? body) ...))
+     (syntax-rules ()
+       [(_ e ...) pass?
+        `(,uri . ,body)]
+       ...)]
+    [(_ uri (checked ...) ((e ...) test? body) rest ...)
+     (property-syntax-rules uri
+       (checked ... ((e ...) test? body))
+       rest ...)]
+    [(_ uri (checked ...) ((e ...) body) rest ...)
+     (property-syntax-rules uri
+       (checked ... ((e ...) #t body))
+       rest ...)]))))
 
 (@* "Grounding/resolving relative references."
  "Properties will usually have to ground their relative object
@@ -339,13 +348,14 @@ of objects of a certain, specified type. The programmer provides a
 predicate and a creator that creates the right objects from the input."
 
 (@c
-(deifne-syntax define-list-property
+(define-syntax define-list-property
   (syntax-rules ()
     [(_ name uri test? make)
      (define-property name uri
-       [(e1 e2 ...)
-        (for-all test? #'(e1 e2 ...))
-        `(,(make e1) ,(make e2) ...)])]))))
+       (...
+         [(e1 e2 ...)
+          (for-all test? #'(e1 e2 ...))
+          `(,(make e1) ,(make e2) ...)]))]))))
 
 (@ "|define-node-list-property| defines a property that expexts a
 list of nodes as its objects."
@@ -398,6 +408,5 @@ one or more strings as objects."
 (define-string-property url dscts:url)
 (define-string-property cvs-root dscts:cvs-root)
 (define-string-property cvs-module dscts:cvs-module)))
-
 
 )
