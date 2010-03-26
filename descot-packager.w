@@ -50,8 +50,24 @@ properties.
 our Descot packages."
 
 (arcfide descot packager environment)
-(export Library Binding License Person Retrieval-method Archive
-        Single-file SCM CVS Implementation)
+(export Library Library-root Library-default-properties
+        Binding Binding-root Binding-default-properties
+        License License-root License-default-properties
+        Person Person-root Person-default-properties
+        Retrieval-method Retrieval-method-root 
+        Retrieval-method-default-properties
+        Archive Archive-root Archive-default-properties
+        Single-file Single-file-root Single-file-default-properties
+        SCM SCM-root SCM-default-properties
+        CVS CVS-root CVS-default-properties
+        Implementation Implementation-root 
+        Implementation-default-properties
+        default-root
+        parameterize
+        name alternatives description homepage import alternative-names
+        export license authors creation modified contact implementation
+        version location categories copyright-year copyright-owner
+        email url cvs-root cvs-module)
 (import (except (chezscheme) define-property import))
 
 (@* "Class Definitions"
@@ -102,7 +118,7 @@ globally."
            (syntax-rules ()
              [(_ subject property ...)
               `(,(@< |Construct subject| subject-root 'subject name)
-                (type class-type)
+                ,(type class-type)
                 property ...
                 . ,(default-properties))]))))]))))
 
