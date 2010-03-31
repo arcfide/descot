@@ -7,36 +7,15 @@
 \maketitlepage
 
 \abstract
-The Descot packager is designed to improve the portability of code that 
-is distributed
-by Scheme programmers. Rather than define code using a specific module 
-system that must be individually translated, into either other module 
-systems or into Descot metadata, the Descot packager provides an easy 
-to write encoding of the core vocabulary in the Descot metalanguage in 
-an extensible format. Instead of writing SRDF files for each file, you 
-define a prelude file that defines some basic defaults for a set of 
-files,and you then define specific properties for each specific library 
-that you have defined. This forms, in effect,a module or package 
-declaration of the file directly using Descot. The packager can then 
-build an SRDF file suitable for uploading to a Descot server for 
-publication and indexing, or it can be used to general system specific 
-modules for use by the users of the code.
-This package documentation contains four parts, Program, Package 
-Organization, Package Syntax and RDF Crash Course.\endabstract
+The Descot packager is designed to improve the portability of code that is distributed
+by Scheme programmers. Rather than define code using a specific module system that must be individually translated, into either other module systems or into Descot metadata, the Descot packager provides an easy to write encoding of the core vocabulary in the Descot metalanguage in an extensible format. Instead of writing SRDF files for each file, you define a prelude file that defines some basic defaults for a set of files,and you then define specific properties for each specific library that you have defined. This forms, in effect,a module or package declaration of the file directly using Descot. The packager can then build an SRDF file suitable for uploading to a Descot server for publication and indexing, or it can be used to general system specific modules for use by the users of the code.
+This package documentation contains four parts, Program, Package Organization, Package Syntax and RDF Crash Course.\endabstract
 
 \chapter{Programme}{}%
-For the first part Program, it contains two subparts. The first subpart 
-is mainly about transformation from code to metadata and the second 
-part is focused on metadata to code.
-The Descot Package language is defined as the code is written here, but 
-at a high-level, it consists of forms for defining Class objects, 
-properties, and objects. Any given node or object is either a string 
-or a list form, or, as a special case, a symbol is considered to be a 
-shorthand for a list form of one element. The list form is a relative 
-reference, while a string form is considered an absolute reference. 
-Properties are designed to be used in the tails of Class forms, and 
-associate given classes propert with some object/node. Class forms
-associate a single object (subject) with a set of properties
+For the first part Program, it contains two subparts. The first subpart is mainly about transformation from code to metadata and the second part is focused on metadata to code.
+The Descot Package language is defined as the code is written here,but at a high-level, it consists of forms for defining Class objects, properties, and objects. Any given node or object is either a string or a list form, or, as a special case, a symbol is considered to be a shorthand for a list form of one element. The list form is a relative reference, while a string form is considered an absolute reference. Properties are designed to be used in the tails of Class forms, and associate given class¡¯s propert with some object/node. Class forms associate a single object (subject) with a set of properties.
+
+\verbatim
 (Library (arcfide chezweb tangle)
 (author (arcfide))
 (license isc-license)
@@ -44,21 +23,36 @@ associate a single object (subject) with a set of properties
 (location
 (Gopher _
 (uri "gopher://gopher.sacrideo.us/9chezweb/cheztangle.ss"))))
+|endverbatim
 Class Definitions. The Descot metalanguage defines the following classes:
-Library
-Binding
-License
-Person
-Retrieval-method
-Archive
-Single-file
-SCM
-CVS
-Implementation
+\unorderedlist
+\li Library
+\li Binding
+\li License
+\li Person
+\li Retrieval-method
+\li Archive
+\li Single-file
+\li SCM
+\li CVS
+\li Implementation
+\endunorderedlist
+
+\noindent
 The Descot packager defines class forms for each of these. They all share a common form.
+\verbatim
 (<class-name> <subject> <property> ...)
-This allows for a fairly straightforward definition for classes. For each class, we provide subject root and default properties parameters, which establish the defaults for the class, as well as the class type, which is used to automatically insert the correct type annotation on the class subject. Subjects, if relative, will use the subject root parameter to fully ground their locations, and the default properties will be added to this class, and can be defined globally.
-The subject root parameter should contain a string that is the default base root for any relatively defined subject with the given class.
+\noindent
+This allows for a fairly straightforward definition for classes. 
+For each class, we provide subject root and default properties parameters,
+which establish the defaults for the class, as well as the class type, 
+which is used to automatically insert the correct type annotation on the 
+class subject. Subjects, if relative, will use the subject root parameter 
+to fully ground their locations, and the default properties will be added 
+to this class, and can be defined globally.
+\sect The subject root parameter should contain a string that is the 
+default base root for any relatively defined subject with the given class.
+\iffalse
 Define subject root parameter ¡Ô          
 (define subject-root
 (make-parameter
@@ -67,7 +61,11 @@ Define subject root parameter ¡Ô
 (unless (string? x)
 (errorf ¡¯subject-root "expected a URI string, found ~s" x))
 x)))
-The default properties parameter should be bound in the prelude file to any properties true that hold for all subjects of a particular class.
+\fi
+\noindent
+The default properties parameter should be bound in the prelude file to 
+any properties true that hold for all subjects of a particular class.
+\iffalse
 Define default properties parameter ¡Ô  
 (define default-properties
 (make-parameter
@@ -78,8 +76,14 @@ Define default properties parameter ¡Ô
 "Expected a list of properties, found ~s"
 x))
 x)))
-When a class form is used, the subject may be in either a string, symbol, or list form. In the latter two forms, the object or subject is considered to be a relative reference. This means that it must be converted to a URI path and then appended to the base URI. A string reference is expected to be an absolute reference.
-Construct subject ¡Ô 
+\fi
+\noindent When a class form is used, the subject may be in either a string, 
+symbol, or list form. In the latter two forms, the object or subject is 
+considered to be a relative reference. This means that it must be converted 
+to a URI path and then appended to the base URI. A string reference is expected 
+to be an absolute reference.
+\iffalse
+Construct subject ¡Ô
 (cond
 [(string? subject) subject]
 [(pair? subject)
@@ -89,8 +93,11 @@ Construct subject ¡Ô
 (errorf ¡¯name
 "expected a string, list, or symbol, but found ~s"
 subject)])
-The following procedures enforce the naming conventions mentioned in the Package Syntax section.
-¡Ô  
+\fi
+\sect The following procedures enforce the naming conventions mentioned 
+in the Package Syntax section.
+\iffalse
+¡Ô       
 (meta define (class-parameter class)
 (datum->syntax
 class
@@ -104,23 +111,31 @@ class
 (datum->syntax
 class
 (string->symbol (format "dscts:~a" (syntax->datum class)))))
-Properties accept as their arguments forms which are meant to indicate the type of object associated with a given property. At the root, a property establishes some property associate with the object created from its arguments:
+\fi
+\noindent Properties accept as their arguments forms which are meant 
+to indicate the type of object associated with a given property. 
+At the root, a property establishes some property associate with the 
+object created from its arguments:
+\verbatim
 (<property> <object> ...)
-The property will be some URI, and the object will be some proper object list.
-Grounding/resolving relative references.Properties will usually have to ground their relativeobject references in some way or another based on some root URI. The following procedure can help withthat.
-
-<*>¡Ô 
+|endverbatim
+\noindent The |property| will be some URI, and the object will be some proper object list.
+Properties will usually have to ground their relativeobject references in some way or another based on some root URI. 
+\iffalse
+<*>¡Ô     
 (define (resolve root relative)
 (assert (string? root))
 (assert
 (or (string? relative) (pair? relative) (symbol? relative)))
 (cond
 [(string? relative) (string-append root relative)]
-[(pair? relative) (format "~a~~a~^/~" root relative)]
+[(pair? relative) (format "~a~~a~^/~" root relative)] 
 [(symbol? relative) (format "~a~a" root relative)]))
-Typed Properties. While using define-property by itself is okay, there are a number of common idioms for properties that show up, so rather than writing each of these repeatedly, some of these patterns are defined(See Syntax Section).
-Descot Property Definitions. The following are the defined properties for Descot.
-
+\fi
+\nsect{Typed Properties}
+While using |define-property| by itself is okay, there are a number of common idioms for properties that show up, so rather than writing each of these repeatedly, some of these patterns are defined(See Syntax Section).\endnsect
+\nsect{0}{Descot Property Definitions}Descot Property Definitions. The following are the defined properties for Descot.
+\iffalse
 <*>¡Ô
 (define-string-property name dscts:name)
 (define-node-property alternatives dscts:alts default-root)
@@ -159,11 +174,12 @@ Person-root)
 (define-string-property url dscts:url)
 (define-string-property cvs-root dscts:cvs-root)
 (define-string-property cvs-module dscts:cvs-module)
+\fi
 
 \chapter{Package Organization}{}%
 
 \section{Dictorary Layout}{}%
-packages/
+(?what commond should I put here?) packages/
 		drc/
 			packages_guide.tex
 			packages_tech.tex
@@ -171,16 +187,18 @@ packages/
 Under packages directory is drc directory that includes packages_guide.tex file and packages_tech.tex file. 
 
 \section{Prelude}{}%
-For defining some basic defaults(?) for a set of files.
+(?what commond should I put here?)
+ For defining some basic defaults(?) for a set of files.
 
 \section{Library Package}{}%
+(?what commond should I put here?)
 Library Definition: (arcfide descot packager environment)
 A library that will form the execution environment of our Descot packages is defined.
 Exports: Library Binding License Person Retrieval-method Archive Single-file SCM CVS Implementation
 Imports: (chezscheme)
 
 \chapter{Package Syntax}{}%
-The following are syntaxes of package language.
+The following are some examples of syntaxes of package language.
 
 <*>¡Ô                                                     
 (define-syntax define-class
@@ -194,7 +212,7 @@ The following are syntaxes of package language.
 [(_ subject property ...)
 ¡®(,< Construct subject > (type class-type) property
 ... . ,(default-properties))]))))]))
-Then trivially define each of the classes. However, all of the classes have a similar naming convention, so to enforce this, the following bulk class definition syntax should be used. Basically, each class should be a capitalized term, which forms the prefix for the two parameters,namely, root and default-properties. Each should be prefixed with the Class-. Finally,each class definition is assumed to have a node name defined by dscts:Class which is the type of the class in RDF.
+\sect Then trivially define each of the classes. However, all of the classes have a similar naming convention, so to enforce this, the following bulk class definition syntax should be used. Basically, each class should be a capitalized term, which forms the prefix for the two parameters,namely, root and default-properties. Each should be prefixed with the Class-. Finally,each class definition is assumed to have a node name defined by dscts:Class which is the type of the class in RDF.
 
 <*>¡Ô
 (define-syntax define-classes
@@ -248,8 +266,8 @@ uri
 (checked ... ((e ...) #t body))
 rest
 ...)))
-The following syntaxes are mentioned in the of Programme part.
-Define-string-property defines a property that expects a single string argument as the object. 
+\sect The following syntaxes are mentioned in the of Programme part.
+\sect |define-string-property| defines a property that expects a single string argument as the object. 
 
 <*>¡Ô                  
 (define-syntax define-string-property
@@ -259,7 +277,7 @@ Define-string-property defines a property that expects a single string argument 
 uri
 ((s) (string? (syntax->datum #¡¯s))
 ¡®^ ,s ,(xsd "dateTime"))))]))
-Define-date-property defines a property that expects a single date string in a standard RDF dateTime format. 
+\sect |define-date-property|defines a property that expects a single date string in a standard RDF dateTime format. 
 
 <*>¡Ô                             
 (define-syntax define-date-property
@@ -269,7 +287,7 @@ Define-date-property defines a property that expects a single date string in a s
 uri
 ((s) (string? (syntax->datum #¡¯s))
 ¡®(^ ,s ,(xsd "dateTime"))))]))
-A special case of the date format is the Year format, and so define define-year-property to handle cases that expect the year.
+\sect A special case of the date format is the Year format, and so define define-year-property to handle cases that expect the year.
 
 <*>¡Ô     
 (define-syntax define-year-property
@@ -279,7 +297,7 @@ A special case of the date format is the Year format, and so define define-year-
 uri
 ((y) (integer? (syntax->datum #¡¯y))
 ¡®(^ ,(number->string y) ,(xsd "gYear"))))]))
-Define-node-proprety defines a proprety that expects a single node. 
+\sect |define-node-proprety| defines a proprety that expects a single node. 
 
 <*>¡Ô                
 (define-syntax define-node-property
@@ -290,8 +308,7 @@ uri
 ((n) (let ([x (syntax->datum #¡¯n)])
 (or (string? x) (pair? x) (symbol? x)))
 (resolve root n)))]))
-Define-list-property defines a property that expects some list of objects of a certain, specified type.
-The programmer provides a predicate and a creator that creates the right objects from the input.
+\sect |define-list-property| defines a property that expects some list of objects of a certain, specified type. The programmer provides a predicate and a creator that creates the right objects from the input.
 
 <*>¡Ô          
 (deifne-syntax
@@ -303,7 +320,7 @@ uri
 ((e1 e2 ...)
 (for-all test? #¡¯(e1 e2 ...))
 ¡®(,(make e1) ,(make e2) ...)))]))
-Define-node-list-property defines a property that expexts a list of nodes as its objects.
+\sect |define-node-list-property| defines a property that expexts a list of nodes as its objects.
 
 <*>¡Ô  
 (define-syntax define-node-list-property
@@ -316,7 +333,7 @@ uri
 (let ([x (syntax->datum x)])
 (or (string? x) (pair? x) (symbol? x))))
 (lambda (x) (resolve root x)))]))
-Define-string-list-proprety defines a property that expects one or more strings as objects.
+\sect |define-string-list-proprety| defines a property that expects one or more strings as objects.
 
 <*>¡Ô  
 (define-syntax define-string-list-property
@@ -329,7 +346,7 @@ uri
 (lambda (x) '($ ,x)))])) 
 
 \chapter{RDF Crash Course}{}%
-This package is used for teaching users the knowledge about RDF in an easy-understand and easy-master way. Teach the essentail points of RDF to let normal users to pick it up quickly.
+\sect This package is used for teaching users the knowledge about RDF in an easy-understand and easy-master way. Teach the essentail points of RDF to let normal users to pick it up quickly.
 
 \medskip{\narrower\noindent
 This is a quote from someone famous. This is a quote from someone
@@ -342,14 +359,19 @@ quote from someone famous.\par}\medskip
 
 \medskip\verbatim
 $ tex sample_doc.tex
-  And it obeys indenting and ignores \funny things.
+And it obeys indenting and ignores \funny things.
 |endverbatim
 
 \section{Subbed Section}{sec-sub-samp}%
 \subsection{Real Subsection}{sub-sec-samp}%
 This would contain the contents of the sub section.
 
-You could also put a graphic somewhere in ehre.
+You could also put a graphic somewhere in here.
+
+\iffalse
+How could I insert a graph?
+Where should I write the name of the file?
+\fi
 
 \figplace{\includegraphics[width=15cm]{overview.eps}}
   {Workflow Outline}
