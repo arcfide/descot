@@ -7,13 +7,37 @@
 \maketitlepage
 
 \abstract
-The Descot packager is designed to improve the portability of code that is distributed
-by Scheme programmers. Rather than define code using a specific module system that must be individually translated, into either other module systems or into Descot metadata, the Descot packager provides an easy to write encoding of the core vocabulary in the Descot metalanguage in an extensible format. Instead of writing SRDF files for each file, you define a prelude file that defines some basic defaults for a set of files,and you then define specific properties for each specific library that you have defined. This forms, in effect,a module or package declaration of the file directly using Descot. The packager can then build an SRDF file suitable for uploading to a Descot server for publication and indexing, or it can be used to general system specific modules for use by the users of the code.
-This package documentation contains four parts, Program, Package Organization, Package Syntax and RDF Crash Course.\endabstract
+The Descot packager is designed to improve the portability of code that 
+is distributed
+by Scheme programmers. Rather than define code using a specific module 
+system that must be individually translated, into either other module 
+systems or into Descot metadata, the Descot packager provides an easy 
+to write encoding of the core vocabulary in the Descot metalanguage in 
+an extensible format. Instead of writing SRDF files for each file, you 
+define a prelude file that defines some basic defaults for a set of files, 
+and you then define specific properties for each specific library that 
+you have defined. This forms, in effect,a module or package declaration 
+of the file directly using Descot. The packager can then build an SRDF 
+file suitable for uploading to a Descot server for publication and 
+indexing, or it can be used to general system specific modules for 
+use by the users of the code.
+This package documentation contains four parts, Program, Package 
+Organization, Package Syntax and RDF Crash Course.
+\endabstract
 
 \chapter{Programme}{}%
-For the first part Program, it contains two subparts. The first subpart is mainly about transformation from code to metadata and the second part is focused on metadata to code.
-The Descot Package language is defined as the code is written here,but at a high-level, it consists of forms for defining Class objects, properties, and objects. Any given node or object is either a string or a list form, or, as a special case, a symbol is considered to be a shorthand for a list form of one element. The list form is a relative reference, while a string form is considered an absolute reference. Properties are designed to be used in the tails of Class forms, and associate given class¡¯s propert with some object/node. Class forms associate a single object (subject) with a set of properties.
+For the first part Program, it contains two subparts. The first subpart 
+is mainly about transformation from code to metadata and the second 
+part is focused on metadata to code.
+The Descot Package language is defined as the code is written here, 
+but at a high-level, it consists of forms for defining Class objects, 
+properties, and objects. Any given node or object is either a string 
+or a list form, or, as a special case, a symbol is considered to be a 
+shorthand for a list form of one element. The list form is a relative 
+reference, while a string form is considered an absolute reference. 
+Properties are designed to be used in the tails of Class forms, and 
+associate given classes propert with some object/node. Class forms
+associate a single object (subject) with a set of properties.
 
 \verbatim
 (Library (arcfide chezweb tangle)
