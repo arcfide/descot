@@ -121,7 +121,81 @@ contains all of the Descot Packager modules for the output types.
 
 \section{{\tt srdf2module}}{}%
 \chapter{Packager File Format}{}%
+Descot Packager is a utility to assist in the creation and use of Descot
+stores. It is intended to be used as an easier packaging format for 
+programmers who write libraries. After writing the code for the library,
+the programmer can write a Descot package description, which can be 
+then turned into an SRDF file for submission to Descot repositories, 
+or, it can be used to generate implementation specific Module declarations.
+It contains the Descot Package Language, Class Definitions, Constructing 
+Subject URIs, Properties, Grounding/resolving relative references, Typed 
+Properties, Descot Property Definitions and Descot Node URIs.
+
 \section{Syntax}{}%
+For the Descot Package Language, it is an encoding of a specific RDF
+based language in prefix notation. It allows for easier and more natural 
+construction of Descot stores without having to do all of the heavy syntax 
+work that SRDF, XML, or Turtle would require.Essentially, to build a Descot 
+Package file is to define a graph by specifying the association or edges 
+associated between a given subject and a series of objects. That is, a Descot 
+package file consists of global definitions and node forms. These node forms 
+associate a particular subject of a given type with zero or more properties. 
+So, a package file consists of a series of thefollowing forms:
+<definition>
+(node <subject> : <class> <property> ...)
+The combination of all
+of these associations forms a graph of the various nodes and edges given 
+in the file(s). The output of these files is SRDF code, and these forms 
+can be thought of as a syntactic wrapping around SRDF. That is, they have 
+rather direct mappings to SRDF equivalents, provided that allow for
+the specfic syntactic limitations imposed by each. They are not as general 
+as SRDF forms.
+However, since these forms simply represent a special Scheme evaluation 
+environment that can be used to build an SRDF expression list, it is also 
+reasonable for allowing that SRDF can be listed in any place where you 
+can place a raw Scheme value and have it interpreted. This would be at the 
+top level and anywhere that is escaped by an escape form. The quoted SRDF datum
+may then be given directly, instead of relying on the specfic syntactic forms 
+given here. This allows using the syntactic forms whenever possible, but
+allows breaking this form and use SRDF when necessary.
+For Class Definitions, whenver create a new node in a Descot graph, the node is 
+almost certainly associate with some particular class. Each class 
+provides information to nodes about how they should behave and what valid 
+properties can be used. Within the Packager language, these nodes are used 
+to provide roots and property defaults for resolving node names and 
+inserting properties for each class of nodes.At the moment, classes are used 
+only to resolve the subjects and fill in default properties. It could also be 
+used to do error checking on the properties, but this is not implemented yet.
+The Descot metalanguage defines the following classes:Library;Binding;License;
+Person;Retrieval-method;Archive;Single-file;SCM;CVS;Implementation.For each 
+class, subject root and default properties parameters are provided, which establish 
+the defaults for the class, as well as the class type, which is used to automatically 
+insert the correct type annotation on the class subject. Subjects, if relative, 
+will use the subject root parameter to fully ground their locations, and
+the default properties will be added to this class, and can be defined globally.
+Plus, a default-root property that can be used as a fallback since even though a 
+root parameter for every class is defined, it's likely that some of these default root
+parameters will not be defined. The subject root parameter contain a string that is 
+the default base root for any relatively defined subject with the given 
+class.The default properties parameter is bound in the prelude file to 
+any properties true that hold for all subjects of a particular class.
+There are procedures enforce the naming conventions, with these procedures, 
+each of the classes could then be trivially defined. However, all of the
+classes have a similar naming convention, so to enforce this, a bulk class 
+definition syntax should be used. Basically, each class should be a 
+capitalized term, which forms the prefix for the two parameters, namely, 
+root and default-properties. Each should be prfixed with the Class-. 
+Finally, it is assumed that each class definition has a node name defined 
+by (dscts "Class") which is the type of the class in RDF.
+The following is a nice looking set of classes definition.
+(define-classes Library Binding Syntax License Person
+Retrieval-method Archive Single-file SCM CVS Implementation).
+For Constructing Subject URIs, when a node form is used, the subject 
+may be in either a string, symbol,or list form. In the latter two forms, 
+the object or subject is considered to be a relative reference. This
+means that it must be converted to a URI path and then appended to the 
+base URI. A string reference is expected to be an absolute reference.
+
 \section{Vocabulary}{}%
 \section{Escapes}{}%
 \chapter{RDF Primer}{}%
