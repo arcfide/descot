@@ -41,7 +41,7 @@ properties.
   (license isc-license)
   (exports tangle me silly)
   (location
-    (Gopher _
+    (Gopher *
       (uri \"gopher://gopher.sacrideo.us/9chezweb/cheztangle.ss\"))))
 |endverbatim
 \\medskip")
