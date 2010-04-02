@@ -49,7 +49,7 @@ properties.
 (@l "We define a library that will form the execution environment of
 our Descot packages."
 
-(arcfide descot packager environment)
+(arcfide descot packager language)
 (export Library Library-root Library-default-properties
         Binding Binding-root Binding-default-properties
         License License-root License-default-properties
@@ -119,7 +119,7 @@ globally."
              [(_ subject property ...)
               `(,(@< |Construct subject| subject-root 'subject name)
                 ,(type class-type)
-                property ...
+                ,property ...
                 . ,(default-properties))]))))]))))
 
 (@ "Every parameter that is create should have a default failback.
@@ -183,8 +183,7 @@ in the next section."
   (datum->syntax class
     (string->symbol (format "~a-default-properties" (syntax->datum class)))))
 (meta define (class-type class)
-  (datum->syntax class
-    (string->symbol (format "dscts:~a" (syntax->datum class)))))))
+  #`(dscts #,(symbol->string (syntax->datum class))))))
 
 (@ "With the above |define-class| syntax, we can then trivially
 define each of the classes. However, all of the classes have a 
@@ -193,7 +192,7 @@ class definition syntax should be used. Basically, each class should
 be a capitalized term, which forms the prefix for the two parameters,
 namely, |root| and |default-properties|. Each should be prefixed
 with the |Class-|. Finally, I assume that each class definition has
-a node name defined by |dscts:Class| which is the type of the class
+a node name defined by |(dscts \"Class\")| which is the type of the class
 in RDF."
 
 (@c
@@ -401,28 +400,48 @@ one or more strings as objects."
 "The following are the defined properties for Descot."
 
 (@c
-(define-string-property name dscts:name)
-(define-node-property alternatives dscts:alts default-root)
-(define-string-property description dscts:desc)
-(define-node-property homepage dscts:homepage default-root)
-(define-node-list-property import dscts:deps Library-root)
-(define-string-list-property alternative-names dscts:names)
-(define-node-list-property export dscts:exports Binding-root)
-(define-node-property license dscts:license License-root)
-(define-node-list-property authors dscts:authors Person-root)
-(define-date-property creation dscts:creation)
-(define-date-property modified dscts:modified)
-(define-node-property contact dscts:contact Person-root)
-(define-node-property implementation dscts:implementation
+(define-string-property name (dscts "name"))
+(define-node-property alternatives (dscts "alts") default-root)
+(define-string-property description (dscts "desc"))
+(define-node-property homepage (dscts "homepage") default-root)
+(define-node-list-property import (dscts "deps") Library-root)
+(define-string-list-property alternative-names (dscts "names"))
+(define-node-list-property export (dscts "exports") Binding-root)
+(define-node-property license (dscts "license") License-root)
+(define-node-list-property authors (dscts "authors") Person-root)
+(define-date-property creation (dscts "creation"))
+(define-date-property modified (dscts "modified"))
+(define-node-property contact (dscts "contact") Person-root)
+(define-node-property implementation (dscts "implementation")
   Implementation-root)
-(define-string-property version dscts:version)
-(define-node-property location dscts:location Retrieval-method-root)
-(define-string-list-property categories dscts:categories)
-(define-year-property copyright-year dscts:copyright-year)
-(define-node-property copyright-owner dscts:copyright-owner Person-root)
-(define-string-property email dscts:email)
-(define-string-property url dscts:url)
-(define-string-property cvs-root dscts:cvs-root)
-(define-string-property cvs-module dscts:cvs-module)))
+(define-string-property version (dscts "version"))
+(define-node-property location (dscts "location") Retrieval-method-root)
+(define-string-list-property categories (dscts "categories"))
+(define-year-property copyright-year (dscts "copyright-year"))
+(define-node-property copyright-owner (dscts "copyright-owner") Person-root)
+(define-string-property email (dscts "email"))
+(define-string-property url (dscts "url"))
+(define-string-property cvs-root (dscts "cvs-root"))
+(define-string-property cvs-module (dscts "cvs-module"))))
+
+(@* "Descot Node URIs"
+"All Descot nodes are prefixed with the same URI prefix, so I define
+the following helper to make sure that the prefix is thrown in at
+the appropriate points."
+
+(@c
+(define (dscts x)
+  (string-append
+    "http://descot.sacrideo.us/11-rdf-schema#"
+    x))))
+
+(@ "|type| is a unary procedure that take some class type and returns a
+SRDF predicate of the form |((: rdfs \"hasType\") class-type)| assuming
+that |rdfs| is the standard RDF Syntax prefix."
+
+(@c
+(define rdf:type "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+(define (type class)
+  `(,rdf:type ,class))))
 
 )
