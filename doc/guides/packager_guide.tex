@@ -178,32 +178,17 @@ At the moment, classes are used
 only to resolve the subjects and fill in default properties. It could also be 
 used to do error checking on the properties, but this is not implemented yet.
 
-The Descot metalanguage defines the following classes:
 
-\unorderedlist
-\li Library
-\li Binding
-\li License
-\li Person
-\li Retrieval-method
-\li Archive
-\li Single-file
-\li SCM
-\li CVS
-\li Implementation
-\endunorderedlist
-
-For each
-class, subject root and default properties parameters are provided, which establish 
-the defaults for the class, as well as the class type, which is used to automatically 
-insert the correct type annotation on the class subject. Subjects, if relative, 
-will use the subject root parameter to fully ground their locations, and
-the default properties will be added to this class, and can be defined globally.
-Plus, a default-root property that can be used as a fallback since even though a 
-root parameter for every class is defined, it's likely that some of these default root
-parameters will not be defined. The subject root parameter contain a string that is 
-the default base root for any relatively defined subject with the given 
-class.
+For each class, subject root and default properties parameters are provided, 
+which establish the defaults for the class, as well as the class type, which 
+is used to automatically insert the correct type annotation on the class 
+subject. Subjects, if relative, will use the subject root parameter to fully 
+ground their locations, and the default properties will be added to this class, 
+and can be defined globally. Plus, a default-root property that can be used as 
+a fallback since even though a root parameter for every class is defined, it's 
+likely that some of these default root parameters will not be defined. The 
+subject root parameter contain a string that is the default base root for any 
+relatively defined subject with the given class.
 
 The default properties parameter is bound in the prelude file to 
 any properties true that hold for all subjects of a particular class.
@@ -224,8 +209,96 @@ the object or subject is considered to be a relative reference. This
 means that it must be converted to a URI path and then appended to the 
 base URI. A string reference is expected to be an absolute reference.
 
+For Creating new Descot nodes,with a given set of properties, we use node.
+Creating a new node consists of providing a subject URI, its type or class, 
+and then the set of properties and objects associated with that subject node.
+When this form is expanded, it expands into an SRDF literal whose subject 
+is resolved using the root from the <class> and has at least the default 
+properties given by the <class> default properties parameter.
+
+For Properties,they accept as their arguments forms which are meant to 
+indicate the type of object associated with a given property.The property 
+will be some URI, and the object will be some proper object list. In order 
+to define a property, some syntax are defined, which accepts some 
+syntax for the arguments and then performs some transformation on it to 
+build the object. Additionally, we provide the property's URI.The 
+property-syntax-rules macro makes sure to check the input clause forms,
+then creates a syntax-rules form.
+
+For Grounding/resolving relative references, properties will usually 
+have to ground their relative object references in some way or another
+based on some root URI.
+
+For Typed Properties, there are a number of common idioms for properties 
+that show up: {\tt define-string-property} defines a property that expects a 
+single string argument as the object, {\tt define-date-property} defines a 
+property that expects a single date string in a standard RDF dateTime
+format, {\tt define-year-property} is used for handling cases that expect 
+the year, {\tt define-node-proprety} defines a proprety that expects a single 
+node,a single node is normally resolved using the resolve procedure 
+defined above, but it is also possible to use and escape keyword to
+evaluate arbitrary code and have the result inserted as an object, 
+{\tt define-node-list-property} defines a property that expexts a list of 
+nodes as its objects,it ensures that the unquote case is handled just 
+as in the single node property definitions, the {\tt node-properties} syntax 
+mentioned above needs to create a list of the object URIs, 
+{\tt define-string-list-proprety} defines a property that expects one or more 
+strings as objects, {\tt type} is a unary procedure that take some class type 
+and returns a SRDF predicate of the form assuming that rdfs is the 
+standard RDF Syntax prefix, {\tt xsd} is a node constructor that creates XSD 
+nodes using the appropriate prefix.
+
+For Descot Node URIs, all Descot nodes are prefixed with the same URI 
+prefix, and a helper is used to make sure that the prefix is thrown in 
+at the appropriate points.
+
 \section{Vocabulary}{}%
+The Descot metalanguage defines the following classes:
+
+\unorderedlist
+\li Library
+\li Binding
+\li License
+\li Person
+\li Retrieval-method
+\li Archive
+\li Single-file
+\li SCM
+\li CVS
+\li Implementation
+\endunorderedlist
+
 \section{Escapes}{}%
+When writing node properties, each node is essentially a quoted form 
+that is not evaluated,but analyzed for its shape and converted and 
+used as a datum. Sometimes, you may want to pass a datum directly through, 
+and you may want to have that datum obtained as the result of evaluating
+the form instead of treating it like a datum. Escapes provide a way for 
+you to do this. By default, unquote is used as the escaper, but this 
+section defines the forms used to control what escape keyword is used.
+Two forms are defined in this section: escaper and with-escaper. 
+The escaper form works like a syntactic paramater. The with-escaper 
+form allows you to rebind the escaper parameter for a specific
+duration.
+When using the escaper syntax paramter directly, evaluating the 
+form (escaper) will result in the current escaper identifier, whereas 
+doing something like (escaper jump) will set jump to be the new escape
+keyword. This keyword controls how node properties handle their nodes. 
+So, if you have a node property prop that you want to pass something 
+directly, by evaluating it instead of treating it like a node form,
+you might do something like this:
+
+\medskip\verbatim
+(escaper lift)
+(prop (lift (list 'a 'b 'c)))
+\medskip
+
+\noindent
+The with-escaper form sets and resets the escaper syntax parameter
+for the duration of the body code, which it splices into the existing 
+code, you can wrap many forms with the with-escaper form, so it is 
+possible to parameterize the escape form over a number of node definitions.
+
 \chapter{RDF Primer}{}%
 \section{What is RDF?}{}%
 \section{How Descot uses RDF}{}%
