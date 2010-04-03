@@ -321,7 +321,7 @@ single string argument as the object."
   (syntax-rules ()
     [(_ name uri)
      (define-property name uri 
-       [(s) (string? (syntax->datum #'s))  `($ ,s)])]))))
+       [(s) (string? (syntax->datum #'s))  `(($ ,s))])]))))
 
 (@ "|define-date-property| defines a property that expects a
 single date string in a standard RDF dateTime format."
@@ -332,7 +332,7 @@ single date string in a standard RDF dateTime format."
     [(_ name uri)
      (define-property name uri
        [(s) (string? (syntax->datum #'s))
-        `(^ ,s ,(xsd "dateTime"))])]))))
+        `((^ ,s ,(xsd "dateTime")))])]))))
 
 (@ "A special case of the date format is the Year format, and so I
 define |define-year-property| to handle cases that expect the year."
@@ -343,7 +343,7 @@ define |define-year-property| to handle cases that expect the year."
     [(_ name uri)
      (define-property name uri
        [(y) (integer? (syntax->datum #'y))
-        `(^ ,(number->string y) ,(xsd "gYear"))])]))))
+        `((^ ,(number->string y) ,(xsd "gYear")))])]))))
 
 (@ "|define-node-proprety| defines a proprety that expects a single
 node."
@@ -356,7 +356,7 @@ node."
        [(n)
         (let ([x (syntax->datum #'n)])
           (or (string? x) (pair? x) (symbol? x)))
-        (resolve root n)])]))))
+        `(,(resolve (root) 'n))])]))))
 
 (@ "|define-list-property| defines a property that expects some list
 of objects of a certain, specified type. The programmer provides a
@@ -370,7 +370,7 @@ predicate and a creator that creates the right objects from the input."
        (...
          [(e1 e2 ...)
           (for-all test? #'(e1 e2 ...))
-          `(,(make e1) ,(make e2) ...)]))]))))
+          `((,(make 'e1) ,(make 'e2) ...))]))]))))
 
 (@ "|define-node-list-property| defines a property that expexts a
 list of nodes as its objects."
@@ -383,7 +383,7 @@ list of nodes as its objects."
        (lambda (x)
          (let ([x (syntax->datum x)])
            (or (string? x) (pair? x) (symbol? x))))
-       (lambda (x) (resolve root x)))]))))
+       (lambda (x) (resolve (root) x)))]))))
 
 (@ "|define-string-list-proprety| defines a property that expects
 one or more strings as objects."
@@ -394,7 +394,7 @@ one or more strings as objects."
     [(_ name uri)
      (define-list-property name uri
        (lambda (x) (string? (syntax->datum x)))
-       (lambda (x) `($ ,x)))]))))
+       (lambda (x) `(($ ,x))))]))))
 
 (@* "Descot Property Definitions"
 "The following are the defined properties for Descot."
@@ -440,7 +440,7 @@ SRDF predicate of the form |((: rdfs \"hasType\") class-type)| assuming
 that |rdfs| is the standard RDF Syntax prefix."
 
 (@c
-(define rdf:type "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+(define rdf:type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 (define (type class)
   `(,rdf:type ,class))))
 
