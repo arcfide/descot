@@ -250,9 +250,9 @@ Additionally, we provide the property's URI."
 (@c
 (define-syntax define-property
   (syntax-rules ()
-    [(_ name uri clause ...)
+    [(_ name uri (key ...) clause ...)
      (define-syntax name
-       (property-syntax-rules uri () clause ...))]))))
+       (property-syntax-rules uri (key ...) () clause ...))]))))
 
 (@ "The |property-syntax-rules| macro makes sure to check the input
 clause forms, which should be one of the following forms:
@@ -276,18 +276,18 @@ shape:
 
 (@c
 (define-syntax property-syntax-rules
-  (syntax-rules ()
-    [(_ uri (((e ...) pass? body) ...))
-     (syntax-rules ()
+  (syntax-rules (aux)
+    [(_ uri (key ...) (((e ...) pass? body) ...))
+     (syntax-rules (key ...)
        [(_ e ...) pass?
         `(,uri . ,body)]
        ...)]
-    [(_ uri (checked ...) ((e ...) test? body) rest ...)
-     (property-syntax-rules uri
+    [(_ uri (key ...) (checked ...) ((e ...) test? body) rest ...)
+     (property-syntax-rules uri (key ...)
        (checked ... ((e ...) test? body))
        rest ...)]
-    [(_ uri (checked ...) ((e ...) body) rest ...)
-     (property-syntax-rules uri
+    [(_ uri (key ...) (checked ...) ((e ...) body) rest ...)
+     (property-syntax-rules uri (key ...)
        (checked ... ((e ...) #t body))
        rest ...)]))))
 
@@ -320,7 +320,7 @@ single string argument as the object."
 (define-syntax define-string-property
   (syntax-rules ()
     [(_ name uri)
-     (define-property name uri 
+     (define-property name uri ()
        [(s) (string? (syntax->datum #'s))  `(($ ,s))])]))))
 
 (@ "|define-date-property| defines a property that expects a
@@ -330,7 +330,7 @@ single date string in a standard RDF dateTime format."
 (define-syntax define-date-property
   (syntax-rules ()
     [(_ name uri)
-     (define-property name uri
+     (define-property name uri ()
        [(s) (string? (syntax->datum #'s))
         `((^ ,s ,(xsd "dateTime")))])]))))
 
@@ -341,7 +341,7 @@ define |define-year-property| to handle cases that expect the year."
 (define-syntax define-year-property
   (syntax-rules ()
     [(_ name uri)
-     (define-property name uri
+     (define-property name uri ()
        [(y) (integer? (syntax->datum #'y))
         `((^ ,(number->string y) ,(xsd "gYear")))])]))))
 
@@ -352,7 +352,8 @@ node."
 (define-syntax define-node-property
   (syntax-rules ()
     [(_ name uri root)
-     (define-property name uri
+     (define-property name uri (unquote)
+       [(,n) `(,n)]
        [(n)
         (let ([x (syntax->datum #'n)])
           (or (string? x) (pair? x) (symbol? x)))
@@ -366,7 +367,7 @@ predicate and a creator that creates the right objects from the input."
 (define-syntax define-list-property
   (syntax-rules ()
     [(_ name uri test? make)
-     (define-property name uri
+     (define-property name uri ()
        (...
          [(e1 e2 ...)
           (for-all test? #'(e1 e2 ...))
@@ -379,11 +380,28 @@ list of nodes as its objects."
 (define-syntax define-node-list-property
   (syntax-rules ()
     [(_ name uri root)
-     (define-list-property name uri
-       (lambda (x)
+     (begin
+       (meta define (valid? x)
          (let ([x (syntax->datum x)])
            (or (string? x) (pair? x) (symbol? x))))
-       (lambda (x) (resolve (root) x)))]))))
+       (@< |Define node-properties helper| valid? root)
+       (... (define-property name uri ()
+         [(e1 e2 ...)
+          (list (node-properties e1 e2 ...))])))]))))
+
+(@ "The |node-properties| syntax mentioned above needs to create a list
+of the object URIs. However, I want to apply the same unquote behavior
+to this as I do to the normal singleton node properties definition."
+
+(@> |Define node-properties helper| () (node-properties) (valid? root)
+(... (define-syntax node-properties
+  (syntax-rules (unquote)
+    [(_ (unquote e)) (list e)]
+    [(_ e) (list (resolve (root) 'e))]
+    [(_ (unquote e1) e2 ...)
+     (cons e1 (node-properties e2 ...))]
+    [(_ e1 e2 ...)
+     (cons (resolve (root) 'e1) (node-properties e2 ...))])))))
 
 (@ "|define-string-list-proprety| defines a property that expects
 one or more strings as objects."
