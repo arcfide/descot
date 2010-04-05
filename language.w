@@ -444,4 +444,13 @@ that |rdfs| is the standard RDF Syntax prefix."
 (define (type class)
   `(,rdf:type ,class))))
 
+(@ "|xsd| is a node constructor that creates XSD nodes using the
+appropriate prefix."
+
+(@c
+(define (xsd suffix)
+  (string-append
+    "http://www.w3.org/2001/XMLSchema#"
+    suffix))))
+
 )
