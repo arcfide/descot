@@ -68,7 +68,7 @@ our Descot packages."
         Implementation Implementation-root 
         Implementation-default-properties
         default-root
-        parameterize
+        parameterize unquote
         name alternatives description homepage import alternative-names
         export license authors creation modified contact implementation
         version location categories copyright-year copyright-owner
