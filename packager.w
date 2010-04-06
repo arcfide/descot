@@ -58,11 +58,9 @@ used which just prints out the SRDF code directly."
   [(string-ci=? "srdf" (car fns))
    (define-top-level-value 'converter
      (lambda (x)
-       (for-each 
-         (lambda (x) (unless (eq? (void) x) (pretty-print x)))
-         x)))]
+       (for-each pretty-print x)))]
   [else
-    (parameterize ([source-directories (module-path)])
+    (parameterize ([source-directories `(,(module-path))])
       (load (car fns)))])))
 
 (@* "Processing package files"
@@ -75,10 +73,7 @@ converter on it."
 (converter
   (reverse
     (fold-left
-      (lambda (s file)
-        (append 
-          (@< |Process file| file)
-          s))
+      (lambda (s file) (append (@< |Process file| file) s))
       '()
       (cdr fns))))))
 
@@ -94,7 +89,11 @@ environment."
         (let ([form (read)])
           (if (eof-object? form)
               res
-              (loop (cons (eval form env) res))))))))))
+              (loop 
+                (let ([x (eval form env)])
+                  (if (eq? x (void))
+                      res
+                      (cons x res))))))))))))
 
 (@* "Utilities for Output types"
 "When handling the output type specifier, it's helpful to be able to
@@ -113,9 +112,9 @@ module path."
       x)))
 (define (module-exists? x)
   (file-exists?
-    (format "~a/~a" (module-path) x)))))
+    (format "~a~a" (module-path) x)))))
 
-(@ "Program Creation"
+(@ 
 "We add the actual program here."
 
 (@c 
