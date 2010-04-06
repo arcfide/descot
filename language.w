@@ -1,38 +1,36 @@
 (@chezweb)
 
-"\\centerline{\\titlef Descot Packager}\\medskip
+"\\centerline{\\titlef Descot Package Language/Syntax}\\medskip
 \\centerline{\\bf Aaron W. Hsu}\\bigskip
-\\centerline{Version: 0.1}\\bigskip\\bigskip
-"
+\\centerline{Version: 0.3}\\bigskip\\bigskip
 
-(@* "The Big Idea" 
-"The Descot packager is designed to improve the portability of code
-that is distributed by Scheme programmers. Rather than define code
-using a specific module system that must be individually translated,
-into either other module systems or into Descot metadata, the
-Descot packager provides an easy to write encoding of the core 
-vocabulary in the Descot metalanguage in an extensible format. 
-Instead of writing SRDF files for each file, you define a prelude
-file that defines some basic defaults for a set of files, and you
-then define specific properties for each specific library that
-you have defined. This forms, in effect, a module or package
-declaration of the file directly using Descot. The packager can
-then build an SRDF file suitable for uploading to a Descot server
-for publication and indexing, or it can be used to general system
-specific modules for use by the users of the code.")
+Descot Packager is a utility to assist in the creation and use
+of Descot stores. It is intended to be used as an easier packaging
+format for programmers who write libraries. After writing the code
+for the library, the programmer can write a Descot package description,
+which can be then turned into an SRDF file for submission to Descot
+repositories, or, it can be used to generate implementation specific
+Module declarations.\\bigskip"
 
 (@* "The Descot Package Language"
-"The Descot Package language is defined as the code is written
-here, but at a high-level, it consists of forms for defining
-Class objects, properties, and objects. Any given node or object
-is either a string or a list form, or, as a special case, a
-symbol is considered to be a shorthand for a list form of one
-element. The list form is a relative
-reference, while a string form is considered an absolute reference.
-Properties are designed to be used in the tails of Class forms,
-and associate given class's property with some object/node.
-Class forms associate a single object (subject) with a set of
-properties.
+"The Descot Package language is an encoding of a specific RDF based
+language in prefix notation. It allows for easier and more natural
+construction of Descot stores without having to do all of the heavy
+syntax work that SRDF, XML, or Turtle would require.
+
+Descot's meta language is composed of classes and properties. These
+two families of vocabulary each have their own ``semantics'' and
+most classes behave similarly and are used, in Descot, similarly,
+while properties also fall into various use cases, based on their
+domain and range.
+
+When you create new objects, you want to associate them with particular
+classes, and then associate them with a number of properties. That is
+a subject node generally has a class type and then a series of properties
+following it. This is accomplished using the class constructors defined
+below. So, when we define a new subject for a library that we would
+like to call |(arcfide chezweb tangle)|, we might write something
+like this:
 
 \\medskip
 \\verbatim
@@ -41,10 +39,17 @@ properties.
   (license isc-license)
   (exports tangle me silly)
   (location
-    (Gopher *
-      (uri \"gopher://gopher.sacrideo.us/9chezweb/cheztangle.ss\"))))
+    ,(Single-file *
+       (uri \"gopher://gopher.sacrideo.us/9chezweb/cheztangle.ss\"))))
 |endverbatim
-\\medskip")
+\\medskip
+
+The syntax for each of the properties is defined below in the corresponding
+sections, and the class syntax is also defined below. Subjects are
+resolved as below into URIs. In fact, in the end, when evaluating this
+expression, we get out an SRDF expression suitable for use in Descot
+repositories.
+")
 
 (@l "We define a library that will form the execution environment of
 our Descot packages."
@@ -245,7 +250,11 @@ object created from its arguments:
 some proper object list. In order to define a property, we are
 defining some syntax, which accepts some syntax for the arguments
 and then performs some transformation on it to build the object.
-Additionally, we provide the property's URI."
+Additionally, we provide the property's URI. Notice the allowance 
+for auxilary keywords here. Originally, this was not required, but
+it exists here to enable us to do escaping later on, which allows us
+to embed arbitrary code into our objects. This comes in quite handy
+when dealing with node properties and anonymous, blank nodes."
 
 (@c
 (define-syntax define-property
@@ -269,7 +278,7 @@ shape:
 
 \\medskip
 \\verbatim
-(syntax-rules ()
+(syntax-rules (key ...)
   [(_ e ...) test? `(,uri . ,body)] ...)
 |endverbatim
 "
@@ -292,7 +301,7 @@ shape:
        rest ...)]))))
 
 (@* "Grounding/resolving relative references."
- "Properties will usually have to ground their relative object
+"Properties will usually have to ground their relative object
 references in some way or another based on some root URI. The 
 following procedure can help with that."
 
@@ -346,7 +355,24 @@ define |define-year-property| to handle cases that expect the year."
         `((^ ,(number->string y) ,(xsd "gYear")))])]))))
 
 (@ "|define-node-proprety| defines a proprety that expects a single
-node."
+node. A single node is normally resolved using the resolve procedure
+defined above, but it is also possible to use |unquote| to enable
+arbitrary code to be run and the result inserted as an object. This
+adds the necessary flexibility for doing something like
+
+\\medskip
+\\verbatim
+(location
+  ,(Single-file * (url \"my-code.ss\")))
+|endverbatim
+\\medskip
+
+Where the above node property |location| expects a node as an object.
+Here, we may not want to give a name to each of these files, and it
+is much better to inline this sort of code, which we do by using the
+blank node feature of classes. However, without the unquote, this
+would get treated as the tail end of a URI and resolved. The |unquote|
+above prevents this an enables us to do this sort of thing."
 
 (@c
 (define-syntax define-node-property
@@ -359,22 +385,10 @@ node."
           (or (string? x) (pair? x) (symbol? x)))
         `(,(resolve (root) 'n))])]))))
 
-(@ "|define-list-property| defines a property that expects some list
-of objects of a certain, specified type. The programmer provides a
-predicate and a creator that creates the right objects from the input."
-
-(@c
-(define-syntax define-list-property
-  (syntax-rules ()
-    [(_ name uri test? make)
-     (define-property name uri ()
-       (...
-         [(e1 e2 ...)
-          (for-all test? #'(e1 e2 ...))
-          `((,(make 'e1) ,(make 'e2) ...))]))]))))
-
 (@ "|define-node-list-property| defines a property that expexts a
-list of nodes as its objects."
+list of nodes as its objects. The node properties helper ensures that
+the |unquote| case is handled just as in the single node property
+definitions."
 
 (@c
 (define-syntax define-node-list-property
@@ -410,9 +424,11 @@ one or more strings as objects."
 (define-syntax define-string-list-property
   (syntax-rules ()
     [(_ name uri)
-     (define-list-property name uri
-       (lambda (x) (string? (syntax->datum x)))
-       (lambda (x) `(($ ,x))))]))))
+     (define-property name uri ()
+       (...
+         [(e1 e2 ...)
+          (for-all string? (map syntax->datum #'(e1 e2 ...)))
+          `((($ e1) ($ e2) ...))]))]))))
 
 (@* "Descot Property Definitions"
 "The following are the defined properties for Descot."
