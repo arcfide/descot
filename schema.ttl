@@ -4,7 +4,7 @@
 
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix dscts: <http://descot.sacrideo.us/10-rdf-schema#> .
+@prefix dscts: <http://descot.sacrideo.us/11-rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 # Class Definitions
@@ -177,3 +177,10 @@ dscts:cvs-module	rdf:type	rdf:Property;
 			rdfs:comment	"CVS Module Names";
 			rdfs:domain	dscts:CVS;
 			rdfs:range	xsd:string.
+
+# Binding Properties
+dscts:indirect-export rdf:type rdf:Property;
+  rdfs:label "Indirect Export";
+  rdfs:comment "Specifies an indirect export dependencing on a binding";
+  rdfs:domain dscts:Binding;
+  rdfs:range rdf:List .
