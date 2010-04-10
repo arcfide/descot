@@ -10,7 +10,9 @@ format for programmers who write libraries. After writing the code
 for the library, the programmer can write a Descot package description,
 which can be then turned into an SRDF file for submission to Descot
 repositories, or, it can be used to generate implementation specific
-Module declarations.\\bigskip"
+Module declarations.\\bigskip
+
+\\rendertoc"
 
 (@* "The Descot Package Language"
 "The Descot Package language is an encoding of a specific RDF based
