@@ -39,6 +39,7 @@ Properties are designed to be used in the tails of Class forms, and
 associate given classes propert with some object/node. Class forms
 associate a single object (subject) with a set of properties.
 
+\medskip
 \verbatim
 (Library (arcfide chezweb tangle)
 (author (arcfide))
@@ -48,7 +49,10 @@ associate a single object (subject) with a set of properties.
 (Gopher _
 (uri "gopher://gopher.sacrideo.us/9chezweb/cheztangle.ss"))))
 |endverbatim
+\medskip
+
 Class Definitions. The Descot metalanguage defines the following classes:
+
 \unorderedlist
 \li Library
 \li Binding
@@ -64,8 +68,13 @@ Class Definitions. The Descot metalanguage defines the following classes:
 
 \noindent
 The Descot packager defines class forms for each of these. They all share a common form.
+
+\medskip
 \verbatim
 (<class-name> <subject> <property> ...)
+|endverbatim
+\medskip
+
 \noindent
 This allows for a fairly straightforward definition for classes. 
 For each class, we provide subject root and default properties parameters,
@@ -74,9 +83,12 @@ which is used to automatically insert the correct type annotation on the
 class subject. Subjects, if relative, will use the subject root parameter 
 to fully ground their locations, and the default properties will be added 
 to this class, and can be defined globally.
-\sect The subject root parameter should contain a string that is the 
+
+The subject root parameter should contain a string that is the 
 default base root for any relatively defined subject with the given class.
-\iffalse
+
+\medskip
+\verbatim
 Define subject root parameter ¡Ô          
 (define subject-root
 (make-parameter
@@ -85,11 +97,15 @@ Define subject root parameter ¡Ô
 (unless (string? x)
 (errorf ¡¯subject-root "expected a URI string, found ~s" x))
 x)))
-\fi
+|endverbatim
+\medskip
+
 \noindent
 The default properties parameter should be bound in the prelude file to 
 any properties true that hold for all subjects of a particular class.
-\iffalse
+
+\medskip
+\verbatim
 Define default properties parameter ¡Ô  
 (define default-properties
 (make-parameter
@@ -100,13 +116,17 @@ Define default properties parameter ¡Ô
 "Expected a list of properties, found ~s"
 x))
 x)))
-\fi
+|endverbatim
+\medskip
+
 \noindent When a class form is used, the subject may be in either a string, 
 symbol, or list form. In the latter two forms, the object or subject is 
 considered to be a relative reference. This means that it must be converted 
 to a URI path and then appended to the base URI. A string reference is expected 
 to be an absolute reference.
-\iffalse
+
+\medskip
+\verbatim
 Construct subject ¡Ô
 (cond
 [(string? subject) subject]
@@ -117,10 +137,14 @@ Construct subject ¡Ô
 (errorf ¡¯name
 "expected a string, list, or symbol, but found ~s"
 subject)])
-\fi
-\sect The following procedures enforce the naming conventions mentioned 
+|endverbatim
+\medskip
+
+The following procedures enforce the naming conventions mentioned 
 in the Package Syntax section.
-\iffalse
+
+\medskip
+\verbatim
 ¡Ô       
 (meta define (class-parameter class)
 (datum->syntax
@@ -135,17 +159,25 @@ class
 (datum->syntax
 class
 (string->symbol (format "dscts:~a" (syntax->datum class)))))
-\fi
+|endverbatim
+\medskip
+
 \noindent Properties accept as their arguments forms which are meant 
 to indicate the type of object associated with a given property. 
 At the root, a property establishes some property associate with the 
 object created from its arguments:
+
+\medskip
 \verbatim
 (<property> <object> ...)
 |endverbatim
 \noindent The |property| will be some URI, and the object will be some proper object list.
 Properties will usually have to ground their relativeobject references in some way or another based on some root URI. 
-\iffalse
+|endverbatim
+\medskip
+
+\medskip
+\verbatim
 <*>¡Ô     
 (define (resolve root relative)
 (assert (string? root))
@@ -155,11 +187,19 @@ Properties will usually have to ground their relativeobject references in some w
 [(string? relative) (string-append root relative)]
 [(pair? relative) (format "~a~~a~^/~" root relative)] 
 [(symbol? relative) (format "~a~a" root relative)]))
-\fi
-\nsect{Typed Properties}
-While using |define-property| by itself is okay, there are a number of common idioms for properties that show up, so rather than writing each of these repeatedly, some of these patterns are defined(See Syntax Section).\endnsect
-\nsect{0}{Descot Property Definitions}Descot Property Definitions. The following are the defined properties for Descot.
-\iffalse
+|endverbatim
+\medskip
+
+\section{Typed Properties}
+While using |define-property| by itself is okay, there are a number of 
+common idioms for properties that show up, so rather than writing each 
+of these repeatedly, some of these patterns are defined(See Syntax 
+Section).
+
+\section{Descot Property Definitions}
+Descot Property Definitions. The following are the defined properties for Descot.
+
+\medskip\verbatim
 <*>¡Ô
 (define-string-property name dscts:name)
 (define-node-property alternatives dscts:alts default-root)
@@ -198,17 +238,23 @@ Person-root)
 (define-string-property url dscts:url)
 (define-string-property cvs-root dscts:cvs-root)
 (define-string-property cvs-module dscts:cvs-module)
-\fi
+|endverbatim
+\medskip
 
 \chapter{Package Organization}{}%
 
 \section{Dictorary Layout}{}%
+\medskip\verbatim
 (?what commond should I put here?) packages/
 		drc/
 			packages_guide.tex
 			packages_tech.tex
 		packages.w
-Under packages directory is drc directory that includes packages_guide.tex file and packages_tech.tex file. 
+|endverbatim
+\medskip
+
+Under packages directory is drc directory that includes 
+packages\_guide.tex file and packages\_tech.tex file.
 
 \section{Prelude}{}%
 (?what commond should I put here?)
@@ -224,6 +270,7 @@ Imports: (chezscheme)
 \chapter{Package Syntax}{}%
 The following are some examples of syntaxes of package language.
 
+\medskip\verbatim
 <*>¡Ô                                                     
 (define-syntax define-class
 (syntax-rules ()
@@ -236,8 +283,18 @@ The following are some examples of syntaxes of package language.
 [(_ subject property ...)
 ¡®(,< Construct subject > (type class-type) property
 ... . ,(default-properties))]))))]))
-\sect Then trivially define each of the classes. However, all of the classes have a similar naming convention, so to enforce this, the following bulk class definition syntax should be used. Basically, each class should be a capitalized term, which forms the prefix for the two parameters,namely, root and default-properties. Each should be prefixed with the Class-. Finally,each class definition is assumed to have a node name defined by dscts:Class which is the type of the class in RDF.
+|endverbatim
+\medskip
 
+Then trivially define each of the classes. However, all of the classes 
+have a similar naming convention, so to enforce this, the following 
+bulk class definition syntax should be used. Basically, each class 
+should be a capitalized term, which forms the prefix for the two 
+parameters,namely, root and default-properties. Each should be prefixed 
+with the Class-. Finally,each class definition is assumed to have a 
+node name defined by dscts:Class which is the type of the class in RDF.
+
+\medskip\verbatim
 <*>¡Ô
 (define-syntax define-classes
 (lambda (x)
@@ -254,13 +311,18 @@ The following are some examples of syntaxes of package language.
 #¡¯(begin
 (define-class class param def-prop type)
 (define-classes classes ...)))])))
+|endverbatim
+\medskip
+
 Now a nice looking set of classes is defined that were mentioned in the ealier section.
 
 <*>¡Ô 
 (define-classes Library Binding Syntax License Person
 Retrieval-method Archive Single-file SCM CVS Implementation)
+
 In order to define a property, some syntax are being defined, which accepts some syntax for the arguments and then performs some transformation on it to build the object. Additionally, the property's URI are provided.
  
+\medskip\verbatim
 <*>¡Ô
 (define-syntax define-property
 (syntax-rules ()
@@ -290,9 +352,13 @@ uri
 (checked ... ((e ...) #t body))
 rest
 ...)))
-\sect The following syntaxes are mentioned in the of Programme part.
-\sect |define-string-property| defines a property that expects a single string argument as the object. 
+|endverbatim
+\medskip
 
+The following syntaxes are mentioned in the of Programme part.
+|define-string-property| defines a property that expects a single string argument as the object. 
+
+\medskip\verbatim
 <*>¡Ô                  
 (define-syntax define-string-property
 (syntax-rules ()
@@ -301,8 +367,12 @@ rest
 uri
 ((s) (string? (syntax->datum #¡¯s))
 ¡®^ ,s ,(xsd "dateTime"))))]))
-\sect |define-date-property|defines a property that expects a single date string in a standard RDF dateTime format. 
+|endverbatim
+\medskip
 
+|define-date-property|defines a property that expects a single date string in a standard RDF dateTime format. 
+
+\medskip\verbatim
 <*>¡Ô                             
 (define-syntax define-date-property
 (syntax-rules ()
@@ -311,8 +381,13 @@ uri
 uri
 ((s) (string? (syntax->datum #¡¯s))
 ¡®(^ ,s ,(xsd "dateTime"))))]))
-\sect A special case of the date format is the Year format, and so define define-year-property to handle cases that expect the year.
+|endverbatim
+\medskip
 
+A special case of the date format is the Year format, and so define 
+define-year-property to handle cases that expect the year.
+
+\medskip\verbatim
 <*>¡Ô     
 (define-syntax define-year-property
 (syntax-rules ()
@@ -321,8 +396,12 @@ uri
 uri
 ((y) (integer? (syntax->datum #¡¯y))
 ¡®(^ ,(number->string y) ,(xsd "gYear"))))]))
-\sect |define-node-proprety| defines a proprety that expects a single node. 
+|endverbatim
+\medskip
 
+|define-node-proprety| defines a proprety that expects a single node. 
+
+\medskip\verbatim
 <*>¡Ô                
 (define-syntax define-node-property
 (syntax-rules ()
@@ -332,8 +411,14 @@ uri
 ((n) (let ([x (syntax->datum #¡¯n)])
 (or (string? x) (pair? x) (symbol? x)))
 (resolve root n)))]))
-\sect |define-list-property| defines a property that expects some list of objects of a certain, specified type. The programmer provides a predicate and a creator that creates the right objects from the input.
+|endverbatim
+\medskip
 
+|define-list-property| defines a property that expects some list of 
+objects of a certain, specified type. The programmer provides a 
+predicate and a creator that creates the right objects from the input.
+
+\medskip\verbatim
 <*>¡Ô          
 (deifne-syntax
 define-list-property
@@ -344,8 +429,13 @@ uri
 ((e1 e2 ...)
 (for-all test? #¡¯(e1 e2 ...))
 ¡®(,(make e1) ,(make e2) ...)))]))
-\sect |define-node-list-property| defines a property that expexts a list of nodes as its objects.
+|endverbatim
+\medskip
 
+|define-node-list-property| defines a property that expexts a list of 
+nodes as its objects.
+
+\medskip\verbatim
 <*>¡Ô  
 (define-syntax define-node-list-property
 (syntax-rules ()
@@ -357,8 +447,13 @@ uri
 (let ([x (syntax->datum x)])
 (or (string? x) (pair? x) (symbol? x))))
 (lambda (x) (resolve root x)))]))
-\sect |define-string-list-proprety| defines a property that expects one or more strings as objects.
+|endverbatim
+\medskip
 
+|define-string-list-proprety| defines a property that expects one or 
+more strings as objects.
+
+\medskip\verbatim
 <*>¡Ô  
 (define-syntax define-string-list-property
 (syntax-rules ()
@@ -368,9 +463,13 @@ name
 uri
 (lambda (x) (string? (syntax->datum x)))
 (lambda (x) '($ ,x)))])) 
+|endverbatim
+\medskip
 
 \chapter{RDF Crash Course}{}%
-\sect This package is used for teaching users the knowledge about RDF in an easy-understand and easy-master way. Teach the essentail points of RDF to let normal users to pick it up quickly.
+This package is used for teaching users the knowledge about RDF in an 
+easy-understand and easy-master way. Teach the essentail points of RDF 
+to let normal users to pick it up quickly.
 
 \medskip{\narrower\noindent
 This is a quote from someone famous. This is a quote from someone
@@ -392,13 +491,10 @@ This would contain the contents of the sub section.
 
 You could also put a graphic somewhere in here.
 
-\iffalse
+\medskip\verbatim
 How could I insert a graph?
 Where should I write the name of the file?
-\fi
-
-\figplace{\includegraphics[width=15cm]{overview.eps}}
-  {Workflow Outline}
-  {Workflow Outline}
+|endverbatim
+\medskip
 
 \bye
