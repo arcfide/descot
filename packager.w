@@ -105,7 +105,7 @@ module path."
 
 (@> |Output handler functions| () (module-path module-exists?) ()
 (define module-path
-  (make-parameter ""
+  (make-parameter (or (getenv "DSCTPKGRMODPATH") "")
     (lambda (x)
       (unless (and (string? x)
                    (or (zero? (string-length x))
