@@ -7,22 +7,30 @@
 \maketitlepage
 
 \abstract
-The Descot packager is designed to improve the portability of code that 
-is distributed
-by Scheme programmers. Rather than define code using a specific module 
-system that must be individually translated, into either other module 
+The Descot packager is designed to improve the portability and visibility 
+of code that is distributed
+by Scheme programmers. 
+Rather than define code using a specific module 
+system with a specific system dependency or layout
+that must be individually translated, into either other module 
 systems or into Descot metadata, the Descot packager provides an easy 
 to write encoding of the core vocabulary in the Descot metalanguage in 
-an extensible format. Instead of writing SRDF files for each file, you 
-define a prelude file that defines some basic defaults for a set of files, 
-and you then define specific properties for each specific library that 
-you have defined. This forms, in effect,a module or package declaration 
-of the file directly using Descot. The packager can then build an SRDF 
-file suitable for uploading to a Descot server for publication and 
-indexing, or it can be used to general system specific modules for 
-use by the users of the code.
-This package documentation contains four parts, Program, Package 
-Organization, Package Syntax and RDF Crash Course.
+an extensible format. Instead of writing SRDF files for each file, 
+you can define a series of package files that describe your code,
+and this can be used as a common base for a variety of uses. 
+A library author or collector can generate a single SRDF file suitable
+for uploading to a Descot repository, making it easy to publish the
+information about a library.
+Someone who has downloaded the library and wishes to use it in a
+possibly unique or special environment can generate modules for a
+specific Scheme implementation from the package files, and can use a
+package manager to install or configure the package appropriately.
+This Guide introduces Descot and the problems it solves in the
+Introduction, and then moves on with a tutorial about using the
+packager. Following that the details of how to use the system and its
+features are described. User's who wish to gain a more technical,
+implementator's perspective on the program should consider the woven
+source code as their best resource.
 \endabstract
  
 \chapter{Introduction}{}%
