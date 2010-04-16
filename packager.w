@@ -101,7 +101,10 @@ environment."
 (@* "Utilities for Output types"
 "When handling the output type specifier, it's helpful to be able to
 tell whether the module exists, and provide a means for setting the
-module path."
+module path. The module path is determined by checking for the
+|DSCTPKGRMODPATH| environment variable, which should point to a 
+directory that contains all of the Descot Packager modules for the 
+output types."
 
 (@> |Output handler functions| () (module-path module-exists?) ()
 (define module-path
