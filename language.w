@@ -21,37 +21,67 @@ language in prefix notation. It allows for easier and more natural
 construction of Descot stores without having to do all of the heavy
 syntax work that SRDF, XML, or Turtle would require.
 
-Descot's meta language is composed of classes and properties. These
-two families of vocabulary each have their own ``semantics'' and
-most classes behave similarly and are used, in Descot, similarly,
-while properties also fall into various use cases, based on their
-domain and range.
+This encoding allows us to lose some of the generality of normal RDF
+graphs, in exchange for making it easier to write graphs that use a
+specific vocabulary. Essentially, to build a Descot Package file is
+to define a graph by specifying the association or edges associated
+between a given subject and a series of objects. That is, a Descot
+package file consists of global definitions and |node| forms. These
+|node| forms associate a particular subject of a given type with zero
+or more properties. So, a package file consists of a series of the
+following forms:
+ 
+\\medskip\\verbatim
+<definition>
+(node <subject> : <class> <property> ...)
+|endverbatim
+\\medskip
+ 
+\\noindent
+Details about subjects, properties, and classes are given in the
+following sections. The combination of all of these associations forms
+a graph of the various nodes and edges given in the file(s). 
+Additionally, I have omitted some of the details from the above. There
+are actually two other forms that could occur at the top level, and
+technically, any property may also be used at the top level. This is
+simply a lack of desire on my part to restrict this. It's useful, for
+example, if I want to use a syntactic property inside the middle of an
+SRDF literal. The additional forms that may occur are |with-escaper|
+and |blank-node|. |with-escaper| is detailed in its own section, and
+|blank-node| is also detailed when we talk about the |node| form.
+Blank nodes have no meaning when they are used at the top level, so
+while they are legal, they are essentially no-ops.
+ 
+The output of these files is SRDF code, and these forms can be thought
+of as a syntactic wrapping around SRDF. That is, they have rather
+direct mappings to SRDF equivalents, provided that we allow for the
+specific syntactic limitations imposed by each. They are not as
+general as SRDF forms.
+ 
+However, since these forms simply represent a special Scheme
+evaluation environment that can be used to build an SRDF expression
+list, it is also reasonable for us to allow that SRDF can be listed in
+any place where you can place a raw Scheme value and have it
+interpreted. This would be at the top level and anywhere that is
+escaped by an escape form. The quoted SRDF datum may then be given
+directly, instead of relying on the specific syntactic forms given
+here. This allows you to use the syntactic forms whenever possible,
+but allows you to break this form and use SRDF when necessary.
 
-When you create new objects, you want to associate them with particular
-classes, and then associate them with a number of properties. That is
-a subject node generally has a class type and then a series of properties
-following it. This is accomplished using the class constructors defined
-below. So, when we define a new subject for a library that we would
-like to call |(arcfide chezweb tangle)|, we might write something
-like this:
-
+It would help, I imagine, if you had an example to go by:
+ 
 \\medskip
 \\verbatim
-(Library (arcfide chezweb tangle)
+(node (arcfide chezweb tangle) : library
   (author (arcfide))
   (license isc-license)
   (exports tangle me silly)
-  (location
-    ,(Single-file *
-       (uri \"gopher://gopher.sacrideo.us/9chezweb/cheztangle.ss\"))))
+  (with-escaper unquote
+    (location
+      ,(blank-node 
+         (uri \"gopher://gopher.sacrideo.us/9chezweb/cheztangle.ss\"))))
 |endverbatim
 \\medskip
-
-The syntax for each of the properties is defined below in the corresponding
-sections, and the class syntax is also defined below. Subjects are
-resolved as below into URIs. In fact, in the end, when evaluating this
-expression, we get out an SRDF expression suitable for use in Descot
-repositories.
 ")
 
 (@l "We define a library that will form the execution environment of
