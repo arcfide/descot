@@ -4,6 +4,7 @@
 \\centerline{\\bf Aaron W. Hsu}\\bigskip
 \\centerline{Version 0.1}\\bigskip\\bigskip
 
+\\noindent
 Descot Packager is a utility to assist in the creation and use
 of Descot stores. It is intended to be used as an easier packaging
 format for programmers who write libraries. After writing the code
@@ -49,9 +50,9 @@ the module is a valid one."
 "If the output type specified is not a derivative of |SRDF|, then we 
 assume that it is the name of a module that is available in the
 |module-path| directory. Loading such a module should define a single
-procedure |converter| that, given a list of SRDF elements, prints out 
-the results to standard output.
-
+procedure |converter| that, given an SRDF expression list,
+prints the results to standard output.
+ 
 If no special output type is defined, the default module handler is
 used which just prints out the SRDF code directly."
 
