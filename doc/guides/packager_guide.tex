@@ -34,11 +34,49 @@ source code as their best resource.
 \endabstract
  
 \chapter{Introduction}{}%
-\section{Ben and Amy}
+
+\section{Ben and Amy}{}%
+We will use the names Ben and eAmy to represent two different kinds 
+of users. Ben represents the users who write code and Amy represents
+the normal users who want use the code written by code writers like
+Ben.
+
 \section{Ben's Problem}{}%
+Ben's problem is to let normal users to use his code. But usually 
+normal users could use the code written by code writters like Ben 
+directly, instead they should have an more easy and understandable
+way for using it. So it is the problem for Ben to solve.
+
 \section{Amy's Problem}{}%
+Amy's problem is that she wants to use the code written by packager 
+writters like Ben. But she may not have same modules, compilers, 
+libraries as Ben's, so the problem exists how to use the code generated
+by Ben or other packager writers with different environment mentioned 
+above.
+
 \section{Using Descot to Solve the Problem}{}%
+Descot could solve the problem mentioned above for Ben and Amy. The 
+following is how it works: Ben should write SRDF file by hand which 
+is a really complicated job and then send it to descot server or send
+it directly to Amy. For Amy, she will download the file in descot 
+server or accept the file directly sent to her. And once receive the 
+SRDF file, she has to write S2M or someone else has to which is used 
+for format convertion, like change SRDF format to R6RS module or some 
+other format the user wants. This is the whole process how descot 
+solves the problem for packager writers and normal users who want to 
+use code.
+
 \section{Using the Packager to make it easier}{}%
+Under this situation, the Descot Packager is provided so the problem
+mentioned above will be more easily to solve. Now people like Ben has 
+no need to write SRDF file by hand any more, instead he should write 
+Packager file instead of SRDF file and relatively it is a easier job 
+and Packager file could change the code to SRDF file for him. From the
+normal users perspective, the S2M is already included in Packager 
+document so no need for users like Amy write S2M by hand any more. So 
+with Descot Packager, the whole thing will become much more easy to 
+solve.
+
 \section{Benefits}{}%
 \section{How to use this guide}{}%
 \chapter{Tutorial}{}%
