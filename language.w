@@ -4,6 +4,7 @@
 \\centerline{\\bf Aaron W. Hsu}\\bigskip
 \\centerline{Version: 0.3}\\bigskip\\bigskip
 
+\\noindent
 Descot Packager is a utility to assist in the creation and use
 of Descot stores. It is intended to be used as an easier packaging
 format for programmers who write libraries. After writing the code

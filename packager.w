@@ -70,7 +70,9 @@ used which just prints out the SRDF code directly."
 "To process each package file, we load it with the appropriate 
 evaluation procedure, which takes the form, |eval|s it through the
 |(arcfide descot packager language)| environment, and then runs the
-converter on it."
+converter on it. It is important to have a specific order of 
+evaluation for processing each file, and we have chosen a left to 
+right order."
 
 (@> |Process files and print| () () (fns)
 (converter
