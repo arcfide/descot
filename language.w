@@ -101,7 +101,8 @@ our Descot packages."
         Implementation Implementation-root 
         Implementation-default-properties
         default-root
-        parameterize unquote
+        parameterize with-escaper escaper
+        define-class node :
         name alternatives description homepage import alternative-names
         export license authors creation modified contact implementation
         version location categories copyright-year copyright-owner
@@ -109,7 +110,18 @@ our Descot packages."
 (import (except (chezscheme) define-property import))
 
 (@* "Class Definitions"
-"The Descot metalanguage defines the following classes:
+"Whenver we create a new node in a Descot graph, we will almost
+certainly associate that node with some particular class. Each class
+provides information to our nodes about how they should behave and
+what valid properties can be used. Within the Packager language, we
+also use them to provide roots and property defaults for resolving
+node names and inserting properties for each class of nodes. 
+ 
+At the moment, classes are used only to resolve the subjects and fill
+in default properties. It could also be used to do error checking on
+the properties, but this is not implemented yet. 
+
+The Descot metalanguage defines the following classes:
 
 \\unorderedlist
 \\li Library
@@ -125,17 +137,6 @@ our Descot packages."
 \\endunorderedlist
 
 \\noindent
-The Descot packager defines class forms for each of these. They all
-share a common form.
-
-\\medskip
-\\verbatim
-(<class-name> <subject> <property> ...)
-|endverbatim
-\\medskip
-
-\\noindent
-This allows for a fairly straightforward definition for classes.
 For each class, we provide subject root and default properties
 parameters, which establish the defaults for the class, as well as
 the class type, which is used to automatically insert the correct
@@ -146,22 +147,22 @@ globally."
 
 (@c
 (define-syntax define-class
-  (syntax-rules ()
+  (syntax-rules (root defaults uri)
     [(_ name subject-root default-properties class-type)
      (begin
        (@< |Define subject root parameter| subject-root)
        (@< |Define default properties parameter| default-properties)
-       (...
-         (define-syntax name
-           (syntax-rules ()
-             [(_ subject property ...)
-              `(,(@< |Construct subject| subject-root 'subject name)
-                ,(type class-type)
-                ,property ...
-                . ,(default-properties))]))))]))))
+       (define %class-type class-type)
+       (define-syntax name
+         (syntax-rules (root defaults uri)
+           [(_ root) subject-root]
+           [(_ defaults) (default-properties)]
+           [(_ uri) %class-type])))]))))
 
-(@ "Every parameter that is create should have a default failback.
-This is the |default-root| parameter."
+(@ "Even though we do define a root parameter for every class, it's
+likely that some of these default root parameters will not be defined
+Thus, we should have a |default-root| property that can be used as a
+fallback."
 
 (@c
 (define default-root
@@ -192,23 +193,6 @@ class."
     (lambda (x)
       (assert (or (null? x) (pair? x)))
       x)))))
-
-(@ "When a class form is used, the subject may be in either a string,
-symbol, or list form. In the latter two forms, the object or subject
-is considered to be a relative reference. This means that it must
-be converted to a URI path and then appended to the base URI. 
-A string reference is expected to be an absolute reference."
-
-(@> |Construct subject| () () (subject-root subject name)
-(cond
-  [(string? subject) subject]
-  [(pair? subject) (format "~a~{~a~^/~}" (subject-root) subject)]
-  [(symbol? subject) 
-   (if (eq? '* subject) '* (format "~a~a" (subject-root) subject))]
-  [else 
-    (errorf 'name
-      "expected a string, list, or symbol, but found ~s"
-      subject)])))
 
 (@ "The following procedures enforce the naming conventions mentioned
 in the next section."
@@ -266,6 +250,24 @@ mentioned in the ealier section."
   SCM
   CVS
   Implementation)))
+
+(@* "Constructing Subject URIs"
+"When a |node| form is used, the subject may be in either a string,
+symbol, or list form. In the latter two forms, the object or subject
+is considered to be a relative reference. This means that it must
+be converted to a URI path and then appended to the base URI. 
+A string reference is expected to be an absolute reference."
+
+(@> |Construct subject| () () (subject-root subject name)
+(cond
+  [(string? subject) subject]
+  [(pair? subject) (format "~a~{~a~^/~}" subject-root subject)]
+  [(symbol? subject) 
+   (if (eq? '* subject) '* (format "~a~a" subject-root subject))]
+  [else 
+    (errorf 'name
+      "expected a string, list, or symbol, but found ~s"
+      subject)])))
 
 (@* "Properties"
 "Properties accept as their arguments forms which are meant to 
