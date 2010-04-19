@@ -107,7 +107,8 @@ our Descot packages."
         export license authors creation modified contact implementation
         version location categories copyright-year copyright-owner
         email url cvs-root cvs-module)
-(import (except (chezscheme) define-property import))
+(import (except (chezscheme) define-property import)
+        (arcfide extended-definitions))
 
 (@* "Class Definitions"
 "Whenver we create a new node in a Descot graph, we will almost
@@ -268,6 +269,35 @@ A string reference is expected to be an absolute reference."
     (errorf 'name
       "expected a string, list, or symbol, but found ~s"
       subject)])))
+ 
+(@* "Creating new Descot nodes"
+"Whenever we want to generate a new node, with a given set of
+properties, we use |node|. Creating a new node consists of providing a
+subject URI, its type or class, and then the set of properties and
+objects associated with that subject node. A node form has the
+following form:
+ 
+\\medskip\\verbatim
+(node <subject> : <class> <property> ...)
+|endverbatim
+\\medskip
+
+The |<subject>| should be a valid subject as defined in the previous
+section --- a string, list, or symbol --- and the |<class>| should be
+a class defined by |define-class|. Each property should be a property
+form as described in the following sections. When this form is
+expanded, it expands into an SRDF literal whose subject is resolved
+using the root from the |<class>| and has at least the default
+properties given by the |<class>| default properties parameter. "
+ 
+(@c 
+(define-syntax node
+  (syntax-rules (:)
+    [(_ subj : class prop ...)
+     `(,(@< |Construct subject| (class root) subj node)
+       ,(type (class uri))
+       ,prop ...)]))
+(define-auxilary-keywords :)))
 
 (@* "Properties"
 "Properties accept as their arguments forms which are meant to 
