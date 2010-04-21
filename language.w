@@ -600,7 +600,7 @@ identifier that is used by node properties and |escaper|."
         (error 'current-escaper "expected identifier, found ~s" x))
       x)))))
 
-(@ "{\\f Note: This section details a feature that does not currently
+(@ "{\\bf Note: This section details a feature that does not currently
 function as documented, it is therefore not exported and should not be
 used.}
 The |with-escaper| form sets and resets the |escaper| syntax
