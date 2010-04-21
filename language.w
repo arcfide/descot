@@ -101,7 +101,7 @@ our Descot packages."
         Implementation Implementation-root 
         Implementation-default-properties
         default-root
-        parameterize with-escaper escaper
+        ;parameterize with-escaper escaper
         define-class node :
         name alternatives description homepage import alternative-names
         export license authors creation modified contact implementation
@@ -146,19 +146,20 @@ the subject root parameter to fully ground their locations, and the
 default properties will be added to this class, and can be defined
 globally."
 
-(@c
+(@c 
 (define-syntax define-class
   (syntax-rules (root defaults uri)
     [(_ name subject-root default-properties class-type)
      (begin
        (@< |Define subject root parameter| subject-root)
        (@< |Define default properties parameter| default-properties)
-       (define %class-type class-type)
-       (define-syntax name
-         (syntax-rules (root defaults uri)
-           [(_ root) subject-root]
-           [(_ defaults) (default-properties)]
-           [(_ uri) %class-type])))]))))
+       (module ((name %class-type))
+         (define %class-type class-type)
+         (define-syntax name
+           (syntax-rules (root defaults uri)
+             [(_ root) (subject-root)]
+             [(_ defaults) (default-properties)]
+             [(_ uri) %class-type]))))]))))
 
 (@ "Even though we do define a root parameter for every class, it's
 likely that some of these default root parameters will not be defined
@@ -238,7 +239,20 @@ in RDF."
 (@ "Now I am free to define a nice looking set of classes that were
 mentioned in the ealier section."
 
-(@c
+(@> |Define classes| ()
+  (Library Library-root Library-default-properties
+   Binding Binding-root Binding-default-properties
+   Syntax Syntax-root Syntax-default-properties
+   License License-root License-default-properties
+   Person Person-root Person-default-properties
+   Retrieval-method Retrieval-method-root Retrieval-method-default-properties
+   Archive Archive-root Archive-default-properties
+   Single-file Single-file-root Single-file-default-properties
+   SCM SCM-root SCM-default-properties
+   CVS CVS-root CVS-default-properties
+   Implementation Implementation-root Implementation-default-properties)
+  ()
+
 (define-classes
   Library
   Binding
@@ -294,7 +308,7 @@ properties given by the |<class>| default properties parameter. "
 (define-syntax node
   (syntax-rules (:)
     [(_ subj : class prop ...)
-     `(,(@< |Construct subject| (class root) subj node)
+     `(,(@< |Construct subject| (class root) 'subj node)
        ,(type (class uri))
        ,prop ...)]))
 (define-auxilary-keywords :)))
@@ -551,5 +565,11 @@ appropriate prefix."
   (string-append
     "http://www.w3.org/2001/XMLSchema#"
     suffix))))
+
+(@* "Program Ordering"
+"The following is the compiler order for the above chunks."
+
+(@c
+(@< |Define classes|)))
 
 )
