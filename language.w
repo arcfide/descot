@@ -101,7 +101,7 @@ our Descot packages."
         Implementation Implementation-root 
         Implementation-default-properties
         default-root
-        ;parameterize with-escaper escaper
+        parameterize escaper 
         define-class node :
         name alternatives description homepage import alternative-names
         export license authors creation modified contact implementation
@@ -379,7 +379,7 @@ shape:
        (checked ... ((e ...) #t body))
        rest ...)]))))
 
-(@* "Grounding/resolving relative references."
+(@* "Grounding/resolving relative references"
 "Properties will usually have to ground their relative object
 references in some way or another based on some root URI. The 
 following procedure can help with that."
@@ -460,7 +460,7 @@ above prevents this an enables us to do this sort of thing."
   (syntax-rules ()
     [(_ name uri root)
      (define-property name uri ()
-       [((esc n)) (free-identifier=? #'esc (escaper)) `(,n)]
+       [((esc n)) (free-identifier=? #'esc (current-escaper)) `(,n)]
        [(n)
         (let ([x (syntax->datum #'n)])
           (or (string? x) (pair? x) (symbol? x)))
@@ -479,10 +479,11 @@ definitions."
        (meta define (valid? x)
          (let ([x (syntax->datum x)])
            (or (string? x) (pair? x) (symbol? x))))
-       (@< |Define node-properties helper| valid? root)
-       (... (define-property name uri ()
-         [(e1 e2 ...)
-          (list (node-properties e1 e2 ...))])))]))))
+       (module ((name node-properties))
+         (@< |Define node-properties helper| valid? root)
+         (... (define-property name uri ()
+           [(e1 e2 ...)
+            (list (node-properties e1 e2 ...))]))))]))))
 
 (@ "The |node-properties| syntax mentioned above needs to create a list
 of the object URIs. However, I want to apply the same unquote behavior
@@ -490,10 +491,10 @@ to this as I do to the normal singleton node properties definition."
 
 (@> |Define node-properties helper| () (node-properties) (valid? root)
 (... (define-syntax node-properties
-  (syntax-rules (unquote)
-    [(_ (unquote e)) (list e)]
+  (syntax-rules ()
+    [(_ (esc e)) (free-identifier=? #'esc (current-escaper)) (list e)]
     [(_ e) (list (resolve (root) 'e))]
-    [(_ (unquote e1) e2 ...)
+    [(_ (esc e1) e2 ...) (free-identifier=? #'esc (current-escaper))
      (cons e1 (node-properties e2 ...))]
     [(_ e1 e2 ...)
      (cons (resolve (root) 'e1) (node-properties e2 ...))])))))
@@ -516,7 +517,7 @@ one or more strings as objects."
 
 (@> |Define properties| ()
   (name alternatives description homepage import export
-   alternative-names license authors reation modified contact
+   alternative-names license authors creation modified contact
    implementation version location categories copyright-year
    copyright-owner email url cvs-root cvs-module)
   ()
@@ -556,7 +557,7 @@ escaper, but this section defines the forms used to control what
 escape keyword is used.
  
 Two forms are defined in this section: |escaper| and |with-escaper|.
-The |escaper| form works like a syntactic paramater. The
+The |escaper| form works like a syntactic parameter. The
 |with-escaper| form allows you to rebind the |escaper| parameter for a
 specific duration. 
  
@@ -579,18 +580,30 @@ This would return a property sub-form where |prop| was directly
 associated with the object |(a b c)|. By default, |unquote| is used as
 the escaper."
  
-(@c
-(define-syntax escaper
-  (let ([esc #'unquote])
-    (lambda (x)
-      (syntax-case x ()
-        [(_) esc]
-        [(_ id) (identifier? #'id)
-         (begin
-           (set! esc #'id)
-           #'(begin))]))))))
+(@> |Define escaper| () (escaper) ()
+(define-syntax (escaper x)
+  (syntax-case x ()
+    [(_) #`#'#,(current-escaper)]
+    [(_ id) (identifier? #'id)
+     (begin
+       (current-escaper #'id)
+       #'(begin))]))))
 
-(@ "The |with-escaper| form sets and resets the |escaper| syntax
+(@ "|current-escaper| is a compile-time parameter that stores the
+identifier that is used by node properties and |escaper|."
+
+(@c
+(meta define current-escaper
+  (make-parameter #'unquote
+    (lambda (x) 
+      (unless (identifier? x) 
+        (error 'current-escaper "expected identifier, found ~s" x))
+      x)))))
+
+(@ "{\\f Note: This section details a feature that does not currently
+function as documented, it is therefore not exported and should not be
+used.}
+The |with-escaper| form sets and resets the |escaper| syntax
 parameter for the duration of the body code, which it splices into the
 existing code. It's form should look like this:
  
@@ -618,10 +631,11 @@ definitions."
 (define-syntax (with-escaper x)
   (syntax-case x ()
     [(_ id body ...)
-     #`(begin
-         (escaper id)
-         body ...
-         (escaper #,(escaper)))]))))
+     (let ([old-id (current-escaper)])
+       (current-escaper #'id)
+       #`(begin
+           body ...
+           (escaper #,old-id)))]))))
 
 (@* "Descot Node URIs"
 "All Descot nodes are prefixed with the same URI prefix, so I define
@@ -656,6 +670,7 @@ appropriate prefix."
 "The following is the compiler order for the above chunks."
 
 (@c
+(@< |Define escaper|)
 (@< |Define classes|)
 (@< |Define properties|)))
 
