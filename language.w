@@ -435,8 +435,8 @@ define |define-year-property| to handle cases that expect the year."
 
 (@ "|define-node-proprety| defines a proprety that expects a single
 node. A single node is normally resolved using the resolve procedure
-defined above, but it is also possible to use |unquote| to enable
-arbitrary code to be run and the result inserted as an object. This
+defined above, but it is also possible to use and escape keyword to
+evaluate arbitrary code and have the result inserted as an object. This
 adds the necessary flexibility for doing something like
 
 \\medskip
@@ -446,10 +446,12 @@ adds the necessary flexibility for doing something like
 |endverbatim
 \\medskip
 
+\\noindent
+In this above code |escaper| is set to |unquote| which is the default.
 Where the above node property |location| expects a node as an object.
 Here, we may not want to give a name to each of these files, and it
 is much better to inline this sort of code, which we do by using the
-blank node feature of classes. However, without the unquote, this
+blank node feature of classes. However, without the |unquote|, this
 would get treated as the tail end of a URI and resolved. The |unquote|
 above prevents this an enables us to do this sort of thing."
 
@@ -457,8 +459,8 @@ above prevents this an enables us to do this sort of thing."
 (define-syntax define-node-property
   (syntax-rules ()
     [(_ name uri root)
-     (define-property name uri (unquote)
-       [(,n) `(,n)]
+     (define-property name uri ()
+       [((esc n)) (free-identifier=? #'esc (escaper)) `(,n)]
        [(n)
         (let ([x (syntax->datum #'n)])
           (or (string? x) (pair? x) (symbol? x)))
@@ -512,7 +514,13 @@ one or more strings as objects."
 (@* "Descot Property Definitions"
 "The following are the defined properties for Descot."
 
-(@c
+(@> |Define properties| ()
+  (name alternatives description homepage import export
+   alternative-names license authors reation modified contact
+   implementation version location categories copyright-year
+   copyright-owner email url cvs-root cvs-module)
+  ()
+
 (define-string-property name (dscts "name"))
 (define-node-property alternatives (dscts "alts") default-root)
 (define-string-property description (dscts "desc"))
@@ -536,6 +544,84 @@ one or more strings as objects."
 (define-string-property url (dscts "url"))
 (define-string-property cvs-root (dscts "cvs-root"))
 (define-string-property cvs-module (dscts "cvs-module"))))
+
+(@* "Escapes"
+"When writing node properties, each node is essentially a quoted form
+that is not evaluated, but analyzed for its shape and converted and
+used as a datum. Sometimes, you may want to pass a datum directly
+through, and you may want to have that datum obtained as the result of
+evaluating the form instead of treating it like a datum. Escapes
+provide a way for you to do this. By default, |unquote| is used as the
+escaper, but this section defines the forms used to control what
+escape keyword is used.
+ 
+Two forms are defined in this section: |escaper| and |with-escaper|.
+The |escaper| form works like a syntactic paramater. The
+|with-escaper| form allows you to rebind the |escaper| parameter for a
+specific duration. 
+ 
+When using the |escaper| syntax paramter directly, evaluating the form
+|(escaper)| will result in the current escaper identifier, whereas
+doing something like |(escaper jump)| will set |jump| to be the new
+escape keyword. This keyword controls how node properties handle their
+nodes. So, if you have a node property |prop| that you want to pass
+something directly, by evaluating it instead of treating it like a
+node form, you might do something like this: 
+ 
+\\medskip\\verbatim
+(escaper lift)
+(prop (lift (list 'a 'b 'c)))
+|endverbatim
+\\medskip
+ 
+\\noindent
+This would return a property sub-form where |prop| was directly
+associated with the object |(a b c)|. By default, |unquote| is used as
+the escaper."
+ 
+(@c
+(define-syntax escaper
+  (let ([esc #'unquote])
+    (lambda (x)
+      (syntax-case x ()
+        [(_) esc]
+        [(_ id) (identifier? #'id)
+         (begin
+           (set! esc #'id)
+           #'(begin))]))))))
+
+(@ "The |with-escaper| form sets and resets the |escaper| syntax
+parameter for the duration of the body code, which it splices into the
+existing code. It's form should look like this:
+ 
+\\medskip\\verbatim
+(with-escaper <id> <body> ...)
+|endverbatim
+\\medskip
+ 
+\\noindent
+And it will expand to something like this:
+ 
+\\medskip\\verbatim
+(escaper <id>)
+<body> ...
+(escaper <old-id>)
+|endverbatim
+\\medskip
+ 
+\\noindent
+You can wrap many forms with the |with-escaper| form, so it is
+possible to parameterize the escape form over a number of node
+definitions."
+ 
+(@c
+(define-syntax (with-escaper x)
+  (syntax-case x ()
+    [(_ id body ...)
+     #`(begin
+         (escaper id)
+         body ...
+         (escaper #,(escaper)))]))))
 
 (@* "Descot Node URIs"
 "All Descot nodes are prefixed with the same URI prefix, so I define
@@ -570,6 +656,7 @@ appropriate prefix."
 "The following is the compiler order for the above chunks."
 
 (@c
-(@< |Define classes|)))
+(@< |Define classes|)
+(@< |Define properties|)))
 
 )
