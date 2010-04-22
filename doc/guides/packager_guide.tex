@@ -36,49 +36,106 @@ source code as their best resource.
 \chapter{Introduction}{}%
 
 \section{Ben and Amy}{}%
-We will use the names Ben and eAmy to represent two different kinds 
-of users. Ben represents the users who write code and Amy represents
-the normal users who want use the code written by code writers like
-Ben.
+Throughout this guide, we will revisit two characters in a common
+programming story. Ben is programmer who has written some library
+code, and wishes to distribute it to people who would like to make use
+of this very convenient library. Amy is just such an user. As a
+programmer, she does not like to do everything herself, and so she is
+in the perfect position to benefit from Ben's library code, if she can
+get to it and use it on her system.
 
 \section{Ben's Problem}{}%
-Ben's problem is to let normal users to use his code. But usually 
-normal users could use the code written by code writters like Ben 
-directly, instead they should have an more easy and understandable
-way for using it. So it is the problem for Ben to solve.
+while Ben has written this nice little library --- or maybe it is not
+so little --- he has two problems. Firstly, he wants to be able to
+get the word about his software. He needs an easy to put his code in a
+visible place where other programmers will see his code. Secondly,
+even if other programmers can see his code, they are on different
+systems, and are likely using different implementations of the
+programming language that he has used to write this code. [This is
+Scheme, after all.] Without a better Solution, Ben is stuck writing a
+number of portability layers for his code, or others are stuck having
+to do this possibly non-trivial task themselves. Ben needs an easy way
+to make sure that everyone can use his code with minimal effort.
 
 \section{Amy's Problem}{}%
-Amy's problem is that she wants to use the code written by packager 
-writters like Ben. But she may not have same modules, compilers, 
-libraries as Ben's, so the problem exists how to use the code generated
-by Ben or other packager writers with different environment mentioned 
-above.
+Amy likes Ben's library, and would like to use it, but she has to be
+able to find it easily first. Even after she finds it, she doesn't
+want to go through too much trouble to get it working with her
+compiler or interpreter, and she doesn't want to be tied to using it
+in just the same way that Ben used it. She may want to install it to a
+different location or perhaps even repackage it for distribution, if
+Ben allows this sort of thing. She needs an easy way to quickly and
+programmatically grasp the important and salient features of Ben's
+library so that she can either modify it to suit her environment,
+hopefully automatically, or go elsewhere. 
 
 \section{Using Descot to Solve the Problem}{}%
 Descot could solve the problem mentioned above for Ben and Amy. The 
 following is how it works: Ben should write SRDF file by hand which 
-is a really complicated job and then send it to descot server or send
-it directly to Amy. For Amy, she will download the file in descot 
-server or accept the file directly sent to her. And once receive the 
-SRDF file, she has to write S2M or someone else has to which is used 
-for format convertion, like change SRDF format to R6RS module or some 
-other format the user wants. This is the whole process how descot 
-solves the problem for packager writers and normal users who want to 
-use code.
+is a really complicated job and then send it to a Descot server or send
+it directly to Amy. For Amy, she will download the file in Descot
+server or accept the file directly sent to her. Once she has received the
+SRDF file, she has to write an SRDF2module compiler that converts the
+SRDF information into her system's language. 
+This solution is vastly superior to the other possibility, of having
+to do it all by hand without any programmatically parseable
+information, but SRDF or other encodings of RDF are not the easiest to
+deal with, because they deal with the full generality of RDF.
+Moreover, if a bunch of user's each write their own SRDF2module
+translation program, they will have duplicated a lot of effort if they
+don't share the common subsystems that would inevitably arise from
+these efforts. 
 
 \section{Using the Packager to make it easier}{}%
 Under this situation, the Descot Packager is provided so the problem
-mentioned above will be more easily to solve. Now people like Ben has 
-no need to write SRDF file by hand any more, instead he should write 
-Packager file instead of SRDF file and relatively it is a easier job 
-and Packager file could change the code to SRDF file for him. From the
-normal users perspective, the S2M is already included in Packager 
-document so no need for users like Amy write S2M by hand any more. So 
-with Descot Packager, the whole thing will become much more easy to 
-solve.
+mentioned above will be easier to solve. Now people like Ben have
+no need to write an SRDF file by hand any more, instead he should write
+a Packager file instead of an SRDF file and this is significantly easier
+than writing an SRDF file. Then, the packager program will generate the
+SRDF for him.
+
+When Amy gets the archive that Ben distributes (which she found after
+hunting for it in a Descot repository), these same package files give
+enough information to Amy to generate modules for her system.
+Moreover, if her system is not supported by default in the packager,
+she can easily hook into the packager and provide her own translator.
+Her task will be much easier now, because all the common work that
+she might have had to do before it taken care of for her.
 
 \section{Benefits}{}%
+Why would Ben or Amy submit to this approach? Because it makes their
+life a good deal easier. For Ben, it's easy to distribute is files in
+such a way that package managers and indexers can easily find them
+(The Semantic Web), and he doesn't have to do anything out of the
+ordinary, since he would have had to write a similar file in his
+implementation's module language anyways. Now, he can write the module
+forms once in the Packager format, and the other module languages can
+be generated from them automatically. 
+ 
+Amy gets the benefit of Ben's choice, because now it's easier for her
+to work with the library, and easy for her to integrate it into her
+system. With the packager files, she can use automatic tools to do her
+management work for her, instead of having to manage it all herself.
+
 \section{How to use this guide}{}%
+This guide is a sort of kickstart for the user who justs wants to see
+how the Descot Packager works. It's not a complete documentation of
+the system, and it doesn't describe all of the low-level details. In
+fact, we purposefully leave some of these details out in favor of
+giving you a more idealized picture of the world. We'll get into some
+of the details in the latter sections, but if you want to get into
+those details, the packager is written as a Literate Program
+(ChezWEB), and you can get access to the Woven code, which is
+essentially the technical documentation and source code in one. If you
+really want to see how things are done, I encourage you to investigate
+these documents, which will tell you all you ever wanted to know about
+the systme.
+
+If you just want to get the idea of how to use the system, and figure
+you can learn as you go, you should start with the Tutorial, which
+will guide you through the basics. The other sections can then be
+investigated or used as a reference whenever you need to use them.
+ 
 \chapter{Tutorial}{}%
 \section{Our Example Library}{}%
 \section{Creating the Package files}{}%
