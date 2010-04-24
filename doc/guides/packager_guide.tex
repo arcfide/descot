@@ -510,10 +510,135 @@ code, you can wrap many forms with the with-escaper form, so it is
 possible to parameterize the escape form over a number of node definitions.
 
 \chapter{RDF Primer}{}%
+Underneath it all Descot is a metalanguage written in RDF for source
+code. We try to hide these details as much as possible because, let's
+face it, no one likes to write RDF. However, RDF gives us some
+significant advantages when it comes to extensibility and flexibility.
+It also simplifies our model of working with things, though it
+requires adding a few layers of indirection to get something that is
+also simple to use in the front-end. 
+ 
+This chapter is designed to give you the basics that you need to work
+with RDF in Descot. There are some basic concepts that you'll want to
+know, and some basic techniques with which you should be familiar. If
+you learn those, you shouldn't have to bother with the nitty gritty of
+RDF until you want to, and hopefully, you'll never be forced to do so.
+
 \section{What is RDF?}{}%
+RDF itself stands for ``Resource Description Framework.'' RDF isn't
+an encoding, a file format, or anything concrete at all. In reality,
+it's an abstract idea of how to relate concepts, and a vocabulary for
+relating these ideas. The basic idea behind RDF is to represent
+information about resources as a directed graph. This graph has a set
+of nodes, and some of these nodes are connected to other nodes by
+edges, which are called properties or verbs in RDF lingo. The nodes
+have a direction, so that the edge goes from one node to another. The
+originating node is called a subject, while the target node is called
+the object. Thus, you have a bunch of nodes and arrows pointing to
+various things, and each of them has a name. 
+ 
+When you want to identify a specific node or edge, you do so by its
+name. Names in Descot are URIs. Yes, you heard that right. RDF uses
+URIs to uniquely identify nodes in a global fashion. Not all nodes
+must have URIs, but the only ones that don't are called blank nodes,
+which must be connected to other nodes, and you can not really access
+blank nodes except by going through some other URI-named node. 
+ 
+However, directed graphs, no matter how nice, don't really do us much
+good if we can't write them down. That's why various encodings exist
+for writing down RDF graphs into files or representing them in some
+serialized fashion. We'll get to these more in a moment.
+ 
+Before we get to writing an RDF graph, we should ask ourselves what a
+graph means. To interpret an RDF graph, you have to see how the Schema
+defines the nodes that are used. There isn't much explicitly to
+indicate how a node should be used, but there's usually some intention
+behind it. Nodes themselves may actually represent objects in the real
+world, such as a book, or in our case, source code. You can then have
+arrows going out of this node, which are properties relating that node
+to some other node in some fashion. The names of these properties will
+usually indicate how these two nodes relate. For example, an arrow or
+property might be a name property, that says that the subject has the
+name of the object, which might be a string literal. So, in this way,
+it's almost like an association list, where the keys are properties
+belonging to something. In Scheme, we might look to property lists as
+an example of how this might work. We would use symbols instead of
+URIs, and the properties would be the keys in the property list, and
+the subject would be the symbol to which the property list is
+attached. 
+ 
+At any rate, you can think of an RDF graph as being a bunch of
+sentences with a subject, verb or property, and object, and each verb
+is saying something about the subject and the object and how they
+relate. Let's see how we use this in Descot proper.
+
 \section{How Descot uses RDF}{}%
+In Descot, we have a meta language that is a vocabulary of Classes and
+properties that extend the basic RDF vocabulary. Using this
+vocabulary, we can build up information about source code. We also
+have SRDF, which is an S-expression based encoding of RDF. We have the
+packager format, which is a simpler language that uses the Descot
+vocabulary to describe source code resources. The package format is
+translated into the more general SRDF form. Indeed, you can mix and
+match SRDF with the package format. 
+ 
+In Descot, we have properties for things like the name of the node,
+which might be a node representing some particular library that you
+have written. It might also be a node representing a Scheme
+implementation. We use Classes to distinguish the types of each of
+these nodes. 
+
 \section{How Packages map to RDF Graphs}{}%
+Each package or set of package files in the packager format encodes
+some RDF graph. The properties are edges in the graph, and the nodes
+are created with the {\tt node} form. The above chapters discuss how
+this all is used together, but the main point is that when you write a
+package format, you should remember that you are writing a graph of
+information about your source code, and that is used by the packager
+and other Descot-compliant tools to deduce information from the
+packages to do things like install them, or grab their dependencies
+automatically, or create Scheme implementation specific modules
+derived from them.
+
 \section{Dealing with namespaces}{}%
+The biggest headache in RDF is the URIs. In Descot, we also assume
+that each library, each Binding, each person, and so forth, is going
+to receive some unique RDF URI that uniquely identifies it in the
+world. You can cheat if you know that your world is going to be very
+small, but otherwise, you should spend a little time, at least,
+thinking about how you are going to name all of your nodes. Nodes are
+created for just about everything. Literal nodes don't need URIs, but
+the other nodes do. It generally makes sense to have all of the URIs
+relating to Libraries or belonging to the class of Libraries be
+extensions of one URI, and so forth for each Class of nodes.
+Generally, you'll want to create a hierarchy as you have seen in the
+Tutorial, with roots defining folders to store each of your nodes, as
+it were. These ``folders'' are really just prefixes for all of the
+URIs, but these prefixes help to uniquely identify your nodes when
+they get mixed in with others. Generally, Descot requires that these
+nodes be referencable according to the Descot protocol, so that a
+Descot system can access the information that might have been missing
+form the graph. If you know that you won't need that, such as if you
+are packaging things up purely for module generation purposes, and do
+not ever plan on submitting the meta information to a Descot server,
+you might be able to get away without prefixes, but I don't recommend
+it. 
+ 
+So, the most time you'll spend thinking about RDF in Descot will be
+when you have to come up with the prefix roots for your nodes. I like
+to have something like {\tt <service>://<domain>/<default>/<class>/}
+as my URI prefixes, because it forms a nice tree. 
+ 
+Don't forget that you might also want to look to other people who may
+have already put up the meta data they need, such as for Scheme
+implementations, or shared library information. One of the benefits
+here is that you don't have to do the work all on your own. You can
+point to another library somewhere else and let other people maintain
+that stuff. Descot programs will know how to handle this cross-domain
+and cross-site linking.
+ 
+I hope that makes everything clear!
+
 
 
 \bye
