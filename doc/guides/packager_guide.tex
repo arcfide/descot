@@ -137,10 +137,139 @@ will guide you through the basics. The other sections can then be
 investigated or used as a reference whenever you need to use them.
  
 \chapter{Tutorial}{}%
+
+It would probably help a little if there was a small example to go by,
+right? This chapter will show you the light and easy introduction to
+Descot, so you won't get too scared off of the packager. The basics
+steps to using the packager are A) have your code written; B) Write
+the package files; C) Generate SRDF for uploading to a Descot server;
+and, D) Generate implementation modules for yourself. 
+
 \section{Our Example Library}{}%
+For our sample library, we're going to take a very simple one, so that
+you can see the basics of Descot without having to get into too many
+of the details right away. Let's say we have a library {\tt
+(my-even/odd)} that exports {\tt even?} and {\tt odd?}, which do the
+classic things. Let's say that we've written this in a simple file
+called {\tt even\_odd.scm}. That file would contain, perhaps the
+following:
+ 
+\medskip\verbatim
+(define (even? x)
+  (assert (and (integer? x) (not (negative? x))))
+  (or (zero? x) (odd? (- x 1))))
+
+(define (odd? x)
+  (assert (and (integer? x) (not (negative? x))))
+  (if (zero? x) #f (even? (- x 1))))
+|endverbatim
+\medskip
+
 \section{Creating the Package files}{}%
+In the above code, we want the library for this code to export both
+procedures. We also have some dependencies. This is R6RS code, so
+we'll assume a dependency on the {\tt (rnrs)} library. We'll also
+throw some other meta information in there to make it easy to find.
+Here's how an example package files might look:
+ 
+\medskip\verbatim
+(node (my-even/odd) : Library
+  (name "Even and Odd")
+  (description
+    "Some generic implementations in R6RS of EVEN? and ODD?")
+  (copyright-year 2010)
+  (copyright-owner arcfide)
+  (license public-domain)
+  (import (rnrs))
+  (export even? odd?)
+  (location 
+    ,(blank-node Single-file 
+       (url "http://me.com/even_odd.ss"))))
+|endverbatim
+\medskip
+
+\noindent
+While this is a pretty simple example, there are a few special points
+to mention while we're here. Notice the use of {\tt unquote} here. In
+this case, a location property usually gets resolved into a URL.
+However, we wanted to have a little more control over this, so I used
+{\tt unquote} to tell the property to stop resolving and just evaluate
+the Scheme code as normal, without any resolving. this means that {\tt
+blank-node} is treated as a syntax just like the rest of the forms,
+like {\tt node}, for example. This way, I can create a blank node
+here, that is a Single-file, and that points to where the file can be
+grabbed, without having to place it outside and give it a name. This
+is the main use of {\tt blank-node}, as it has almost no meaning
+outside of an internal use like this.
+ 
+If you don't like {\tt unquote}, then it is possible to use another
+form instead, by using the {\tt escaper} syntax parameter to do it.
+That is beyond this tutorial though, so read the rest of the Guide if
+you want to learn how to do that. 
+ 
+Let's see how the others work. The {\tt name} property here is a
+string property, so it expects that we give it a string as its object.
+The {\tt import} and {\tt export} properties are called node
+properties, which means that they take their objects and resolve them
+into URIs. 
+
+``But wait,'' I hear you say! How does the resolving work? Well,
+that's where the good stuff comes in. Each class that we use is
+associated with a root parameter. We can control how the node names
+are resolved into full URIs with these root parameters. In the case of
+{\tt import} and {\tt export}, the properties use the {\tt
+Library-root} parameter and the {\tt Binding-root} parameter,
+respectively, which are the root parameters for the {\tt Library} and
+{\tt Binding} classes. 
+ 
+A node object can be either a string, in which case that whole string
+is taken to be an already resolved, complete URI, or it can be a
+symbol or list of symbols. When it's a symbol or list of symbols, then
+the node is resolved by turning the symbol or list of symbols into a
+URI suffix, and prefixing the specific root onto the suffix. So, if
+you have, say, a node like {\tt (my library)}, then the suffix might
+becomes {\tt "my/library"} and the prefix, whatever it may be, would be
+attached to this. 
+ 
+Customarily, you should set up all of your root parameters ahead of
+time in a separate prelude file, so that you could reuse it for
+multiple libraries. Here's an example that one might use:
+ 
+\medskip\verbatim
+(default-root "http://rdf.blah.com/")
+(Library-root "http://rdf.blah.com/libs/")
+(Person-root "http://rdf.blah.com/people/")
+(Binding-root "http://rdf.blah.com/bindings/")
+(License-root "http://rdf.blah.com/licenses/")
+|endverbatim
+\medskip
+
+\noindent
+And that's pretty much all there is to the Descot Packager!
+
 \section{Generating SRDF}{}%
+After we have created this Package file, the next step is to generate
+an SRDF file from it so that we can send this to a Descot Server.
+ 
+\medskip\verbatim
+$ descot-packager srdf prelude.dsct even_odd.dsct > even_odd.srdf
+|endverbatim
+\medskip
+
+\noindent
+Well that was easy, now, wasn't it? 
+ 
 \section{Generating Implementation Modules}{}%
+If we want to use this package file as a module system in our Scheme,
+we should probably grab the right converter module for our system,
+say, in this case, R6RS. Once we install it into the right module
+path, we can generate our module declarations:
+ 
+\medskip\verbatim
+$ env DSCTPKGRMODPATH=<path_to_module> \
+    descot-packager r6rs prelude.dsct even_odd.dsct
+|endverbatim
+\medskip
 
 \chapter{Packager Programs}{}%
 Currently there is one program for the Descot packager: {\tt
