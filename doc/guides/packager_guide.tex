@@ -312,7 +312,7 @@ It contains the Descot Package Language, Class Definitions, Constructing
 Subject URIs, Properties, Grounding/resolving relative references, Typed 
 Properties, Descot Property Definitions and Descot Node URIs.
 
-\section{Syntax and Classes}{}%
+\section{Syntax}{}%
 For the Descot Package Language, it is an encoding of a specific RDF
 based language in prefix notation. It allows for easier and more natural 
 construction of Descot stores without having to do all of the heavy syntax 
@@ -438,20 +438,43 @@ standard RDF Syntax prefix, {\tt xsd} is a node constructor that creates XSD
 nodes using the appropriate prefix.
 
 
-\section{Vocabulary}{}%
+\section{Classes}{}%
 The Descot metalanguage defines the following classes:
 
 \unorderedlist
 \li Library
+Library class represents libraries, and most of the properties
+stem from Library nodes. Library nodes are also the
+main root node for most retrievals.
 \li Binding
+It contains information about a procedure or macro that is 
+exported or imported from a library.
 \li License
-\li Person
+It contains information about a License type, such as ISC, 
+BSD, GPL, or a proprietary license of some sort. They may 
+point somewhere else as the main reference, and have only a 
+short description of the actual license in the graph, or 
+they may contain the entire text of the license as the description.
+\li Person/Implementation
+Person and Implementation nodes follow a similar pattern,
+describing people and implementations, respectively.
 \li Retrieval-method
+A node for describing a method to give files, maybe a single file 
+or archive and so on.
 \li Archive
+It contains file archive download information.
 \li Single-file
+It is similar to Archive nodes, but they point to single Scheme 
+files instead of archives.
 \li SCM
+Is a general class for ¡°Source Control¡± based libraries.
+That is, SCM is a sub-class of Retrieval-method like Archive
+and Single-file are, but it describes a retrieval via some
+source control module, like CVS. 
 \li CVS
-\li Implementation
+CVS is the sub-class of the SCM class that describes CVS 
+server modules particularly.
+
 \endunorderedlist
 
 \section{Escapes}{}%
