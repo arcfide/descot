@@ -45,10 +45,10 @@ in the perfect position to benefit from Ben's library code, if she can
 get to it and use it on her system.
 
 \section{Ben's Problem}{}%
-while Ben has written this nice little library --- or maybe it is not
+While Ben has written this nice little library --- or maybe it is not
 so little --- he has two problems. Firstly, he wants to be able to
-get the word about his software. He needs an easy to put his code in a
-visible place where other programmers will see his code. Secondly,
+get the word out about his software. He needs an easy way to put his code in a
+visible place where other programmers will see it. Secondly,
 even if other programmers can see his code, they are on different
 systems, and are likely using different implementations of the
 programming language that he has used to write this code. [This is
@@ -71,10 +71,10 @@ hopefully automatically, or go elsewhere.
 
 \section{Using Descot to Solve the Problem}{}%
 Descot could solve the problem mentioned above for Ben and Amy. The 
-following is how it works: Ben should write SRDF file by hand which 
+following is how it works: Ben could write an SRDF file by hand, which 
 is a really complicated job and then send it to a Descot server or send
-it directly to Amy. For Amy, she will download the file in Descot
-server or accept the file directly sent to her. Once she has received the
+it directly to Amy. For Amy, she would download the file from a Descot
+server or accept the file directly from Ben. Once she has received the
 SRDF file, she has to write an SRDF2module compiler that converts the
 SRDF information into her system's language. 
 This solution is vastly superior to the other possibility, of having
@@ -87,9 +87,9 @@ don't share the common subsystems that would inevitably arise from
 these efforts. 
 
 \section{Using the Packager to make it easier}{}%
-Under this situation, the Descot Packager is provided so the problem
+Under this situation, the Descot Packager is provided so that the problem
 mentioned above will be easier to solve. Now people like Ben have
-no need to write an SRDF file by hand any more, instead he should write
+no need to write an SRDF file by hand any more, instead he can write
 a Packager file instead of an SRDF file and this is significantly easier
 than writing an SRDF file. Then, the packager program will generate the
 SRDF for him.
@@ -100,11 +100,11 @@ enough information to Amy to generate modules for her system.
 Moreover, if her system is not supported by default in the packager,
 she can easily hook into the packager and provide her own translator.
 Her task will be much easier now, because all the common work that
-she might have had to do before it taken care of for her.
+she might have had to do before is taken care of for her.
 
 \section{Benefits}{}%
 Why would Ben or Amy submit to this approach? Because it makes their
-life a good deal easier. For Ben, it's easy to distribute is files in
+life a good deal easier. For Ben, it's easy to distribute his files in
 such a way that package managers and indexers can easily find them
 (The Semantic Web), and he doesn't have to do anything out of the
 ordinary, since he would have had to write a similar file in his
@@ -129,7 +129,7 @@ those details, the packager is written as a Literate Program
 essentially the technical documentation and source code in one. If you
 really want to see how things are done, I encourage you to investigate
 these documents, which will tell you all you ever wanted to know about
-the systme.
+the system.
 
 If you just want to get the idea of how to use the system, and figure
 you can learn as you go, you should start with the Tutorial, which
@@ -151,7 +151,7 @@ you can see the basics of Descot without having to get into too many
 of the details right away. Let's say we have a library {\tt
 (my-even/odd)} that exports {\tt even?} and {\tt odd?}, which do the
 classic things. Let's say that we've written this in a simple file
-called {\tt even\_odd.scm}. That file would contain, perhaps the
+called {\tt even\_odd.ss}. That file would contain, perhaps the
 following:
  
 \medskip\verbatim
@@ -186,7 +186,7 @@ Here's how an example package files might look:
     ,(blank-node Single-file 
        (url "http://me.com/even_odd.ss"))))
 |endverbatim
-\medskip
+\medskiplo;
 
 \noindent
 While this is a pretty simple example, there are a few special points
@@ -228,7 +228,7 @@ symbol or list of symbols. When it's a symbol or list of symbols, then
 the node is resolved by turning the symbol or list of symbols into a
 URI suffix, and prefixing the specific root onto the suffix. So, if
 you have, say, a node like {\tt (my library)}, then the suffix might
-becomes {\tt "my/library"} and the prefix, whatever it may be, would be
+become {\tt "my/library"} and the prefix, whatever it may be, would be
 attached to this. 
  
 Customarily, you should set up all of your root parameters ahead of
@@ -252,7 +252,7 @@ After we have created this Package file, the next step is to generate
 an SRDF file from it so that we can send this to a Descot Server.
  
 \medskip\verbatim
-$ descot-packager srdf prelude.dsct even_odd.dsct > even_odd.srdf
+$ descot-packager -p srdf prelude.dsct even_odd.dsct > even_odd.srdf
 |endverbatim
 \medskip
 
@@ -267,7 +267,7 @@ path, we can generate our module declarations:
  
 \medskip\verbatim
 $ env DSCTPKGRMODPATH=<path_to_module> \
-    descot-packager r6rs prelude.dsct even_odd.dsct
+    descot-packager -q r6rs prelude.dsct even_odd.dsct
 |endverbatim
 \medskip
 
@@ -279,7 +279,7 @@ you an idea of the general user interface to the packager programs.
 \section{{\tt descot-packager}}{}%
 The packager program
 defined here processes packager input files and generates output to standard
-output of the given type specified by <output-type>. At least the 
+output of the given type specified by output-type. At least the 
 output-type SRDF is supported. Additional modules supporting different 
 output types can be loaded dynamically based on what is available.
 
@@ -308,15 +308,13 @@ programmers who write libraries. After writing the code for the library,
 the programmer can write a Descot package description, which can be 
 then turned into an SRDF file for submission to Descot repositories, 
 or, it can be used to generate implementation specific Module declarations.
-It contains the Descot Package Language, Class Definitions, Constructing 
-Subject URIs, Properties, Grounding/resolving relative references, Typed 
-Properties, Descot Property Definitions and Descot Node URIs.
+
 
 \section{Syntax}{}%
 For the Descot Package Language, it is an encoding of a specific RDF
 based language in prefix notation. It allows for easier and more natural 
 construction of Descot stores without having to do all of the heavy syntax 
-work that SRDF, XML, or Turtle would require.Essentially, to build a Descot 
+work that SRDF, XML, or Turtle would require. Essentially, to build a Descot 
 Package file is to define a graph by specifying the association or edges 
 associated between a given subject and a series of objects. That is, a Descot 
 package file consists of global definitions and node forms. These node forms 
@@ -334,32 +332,24 @@ The combination of all of these associations forms a graph of the
 various nodes and edges given in the file(s). The output of these 
 files is SRDF code, and these forms can be thought of as a syntactic 
 wrapping around SRDF. That is, they have rather direct mappings to 
-SRDF equivalents, provided that allow for the specfic syntactic 
+SRDF equivalents, provided that allows for the specfic syntactic 
 limitations imposed by each. They are not as general as SRDF forms.
 
 However, since these forms simply represent a special Scheme evaluation 
 environment that can be used to build an SRDF expression list, it is also 
-reasonable for allowing that SRDF can be listed in any place where you 
+reasonable to permit that SRDF to be listed in any place where you 
 can place a raw Scheme value and have it interpreted. This would be at the 
 top level and anywhere that is escaped by an escape form. The quoted SRDF datum
 may then be given directly, instead of relying on the specfic syntactic forms 
 given here. This allows using the syntactic forms whenever possible, but
 allows breaking this form and use SRDF when necessary.
 
-For Library Definition, there is a library that form the execution environment
-of our Descot packages. It contains classes like Library, Library-root and 
-Library-default-properties, Binding, Binding-root, Binding-default-properties 
-and so on, which could be expressed in the form of Class, Class-root, Class-
-default-properties. In addition, there will be lots of other properties being 
-included, like Implementation-default-properties, default-root, parameterize,
-escaper and so on.
-
-For Class Definitions, whenver create a new node in a Descot graph, the node is 
-almost certainly associate with some particular class. Each class 
-provides information to nodes about how they should behave and what valid 
-properties can be used. Within the Packager language, these nodes are used 
-to provide roots and property defaults for resolving node names and 
-inserting properties for each class of nodes.
+Whenver we create a new node in a Descot graph, we will certainly 
+associate with some particular class. Each class provides information 
+to nodes about how they should behave and what valid properties can be used. 
+Within the Packager language, these nodes are used to provide roots and 
+property defaults for resolving node names and inserting properties for
+each class of nodes.
 
 At the moment, classes are used only to resolve the subjects and fill 
 in default properties. It could also be used to do error checking on 
@@ -370,55 +360,31 @@ which establish the defaults for the class, as well as the class type, which
 is used to automatically insert the correct type annotation on the class 
 subject. Subjects, if relative, will use the subject root parameter to fully 
 ground their locations, and the default properties will be added to this class, 
-and can be defined globally. Plus, a default-root property that can be used as 
+and can be defined globally. Plus, the default-root property that can be used as 
 a fallback since even though a root parameter for every class is defined, it's 
 likely that some of these default root parameters will not be defined. The 
 subject root parameter contain a string that is the default base root for any 
 relatively defined subject with the given class.
 
 The default properties parameter is bound in the prelude file to 
-any properties true that hold for all subjects of a particular class.
-There are procedures enforce the naming conventions, with these procedures, 
-each of the classes could then be trivially defined. However, all of the
-classes have a similar naming convention, so to enforce this, a bulk class 
-definition syntax should be used. Basically, each class should be a 
-capitalized term, which forms the prefix for the two parameters, namely, 
-root and default-properties. Each should be prfixed with the {\tt Class-}.
+any properties hold for all subjects of a particular class.
 
-Finally, it is assumed that each class definition has a node name defined 
-by {\tt (dscts "Class")} which is the type of the class in RDF.
-The following is a nice looking set of classes definition.
 
-For Constructing Subject URIs, when a {\tt node} form is used, the subject
-may be in either a string, symbol,or list form. In the latter two forms, 
-the object or subject is considered to be a relative reference. This
-means that it must be converted to a URI path and then appended to the 
-base URI. A string reference is expected to be an absolute reference.
+When a {\tt node} form is used, the subject may be in either a string, 
+symbol,or list form. In the latter two forms, the object or subject is 
+considered to be a relative reference. This means that it must be converted 
+to a URI path and then appended to the base URI. A string reference is 
+expected to be an absolute reference.
 
-For Creating new Descot nodes,with a given set of properties, we use node.
+For Creating new Descot nodes, with a given set of properties, we use node.
 Creating a new node consists of providing a subject URI, its type or class, 
 and then the set of properties and objects associated with that subject node.
 When this form is expanded, it expands into an SRDF literal whose subject 
-is resolved using the root from the <class> and has at least the default 
-properties given by the <class> default properties parameter.
+is resolved using the root from the class and has at least the default 
+properties given by the class default properties parameter.
 
-For Descot Node URIs, all Descot nodes are prefixed with the same URI 
-prefix, and a helper is used to make sure that the prefix is thrown in 
-at the appropriate points.
 
 \section{Properties}{}%
-For Properties,they accept as their arguments forms which are meant to 
-indicate the type of object associated with a given property.The property 
-will be some URI, and the object will be some proper object list. In order 
-to define a property, some syntax are defined, which accepts some 
-syntax for the arguments and then performs some transformation on it to 
-build the object. Additionally, we provide the property's URI.The 
-property-syntax-rules macro makes sure to check the input clause forms,
-then creates a syntax-rules form.
-
-For Grounding/resolving relative references, properties will usually 
-have to ground their relative object references in some way or another
-based on some root URI.
 
 For Typed Properties, there are a number of common idioms for properties 
 that show up: {\tt string-property} expects a single string argument as 
@@ -437,6 +403,52 @@ and returns a SRDF predicate of the form assuming that rdfs is the
 standard RDF Syntax prefix, {\tt xsd} is a node constructor that creates XSD 
 nodes using the appropriate prefix.
 
+The Descot metalanguage defines the following properties:
+
+\unorderedlist
+\li {\tt alts} is expected to point to an rdf Alt node that will list
+the alternates.
+\li {\tt desc} is a property pointing to a string node that contains
+a description of the node. This
+\li {\tt homepage} can be used where applicable to associate a
+given homepage to a node.
+\li The {\tt CVS} node class also has two properties associated
+with it: {\tt cvs-root} and {\tt cvs-module}.
+\li {\tt deps} points to a List of Libraries upon which the subject
+library is dependent.
+\li {\tt email} associates a string representation of an e-mail
+address with a given Person class node.
+\li {\tt names} is a List of strings of short library names.
+\li {\tt exports} is a List of Binding nodes which represent the
+procedures and macros that the given library exports.
+\li {\tt license} points to a License node that is the license of
+the given Library node.
+\li {\tt authors} is a List of Person nodes that represents the
+authors of the library, but not necessarily the maintainer of
+the Descot metainformation.
+\li {\tt creation} points to a date time string that is the date of
+creation for the library metainformation, not necessarily the
+creation date of the library itself.
+\li {\tt modified} points to a date time string that represents the
+date and time of the last modification made to the library
+metadata, and not necessarily the date and time of the last
+update to the library itself.
+\li {\tr contact} points to a single person who has claimed responsibility
+for maintaining the metadata of a given library.
+\li {\tt implementation} points to an Implementation node,
+which identifies the implementation or language for which
+the code was designed to run.
+\li {\tt version} is a string that identifies the version of the
+library. This could be a version number such as ¡°3.5¡± or
+it could be something like ¡°-Current¡±.
+\li {\tt location} points to a Retrieval-method node or a node
+of a type that is a sub-class of Retrieval-method.
+\li {\tt categories} points to a List of strings that are categories
+or tags for the given library.
+\li {\tt copyright-year} and {\tt copyright-owner} are two parts of
+the Copyright information. {\tt copyright-year} points to a year
+string, while {\tt copyright-owner} may point to a Person or a
+List of Person nodes.
 
 \section{Classes}{}%
 The Descot metalanguage defines the following classes:
@@ -479,21 +491,21 @@ server modules particularly.
 
 \section{Escapes}{}%
 When writing node properties, each node is essentially a quoted form 
-that is not evaluated,but analyzed for its shape and converted and 
+that is not evaluated, but analyzed for its shape and converted and 
 used as a datum. Sometimes, you may want to pass a datum directly through, 
 and you may want to have that datum obtained as the result of evaluating
 the form instead of treating it like a datum. Escapes provide a way for 
-you to do this. By default, unquote is used as the escaper, but this 
+you to do this. By default, {\tt unquote} is used as the escaper, but this 
 section defines the forms used to control what escape keyword is used.
-Two forms are defined in this section: escaper and with-escaper. 
-The escaper form works like a syntactic paramater. The with-escaper 
-form allows you to rebind the escaper parameter for a specific
+Two forms are defined in this section: {\tt escaper} and {\tt with-escaper}. 
+The {\tt escaper} form works like a syntactic paramater. The {\tt with-escaper} 
+form allows you to rebind the {\tt escaper} parameter for a specific
 duration.
-When using the escaper syntax paramter directly, evaluating the 
-form (escaper) will result in the current escaper identifier, whereas 
-doing something like (escaper jump) will set jump to be the new escape
+When using the {\tt escaper} syntax paramter directly, evaluating the 
+form ({\tt escaper}) will result in the current {\tt escaper} identifier, whereas 
+doing something like ({\tt escaper} jump) will set jump to be the new {\tt escape}
 keyword. This keyword controls how node properties handle their nodes. 
-So, if you have a node property prop that you want to pass something 
+So, if you have a node property {\tt prop} that you want to pass something 
 directly, by evaluating it instead of treating it like a node form,
 you might do something like this:
 
@@ -504,10 +516,10 @@ you might do something like this:
 \medskip
 
 \noindent
-The with-escaper form sets and resets the escaper syntax parameter
+The {\tt with-escaper} form sets and resets the {\tt escaper} syntax parameter
 for the duration of the body code, which it splices into the existing 
-code, you can wrap many forms with the with-escaper form, so it is 
-possible to parameterize the escape form over a number of node definitions.
+code. You can wrap many forms with the {\tt with-escaper} form, so it is 
+possible to parameterize the {\tt escape} form over a number of node definitions.
 
 \chapter{RDF Primer}{}%
 Underneath it all Descot is a metalanguage written in RDF for source
