@@ -2,7 +2,7 @@
 
 "\\centerline{\\titlef Descot Package Language/Syntax}\\medskip
 \\centerline{\\bf Aaron W. Hsu}\\bigskip
-\\centerline{Version: 0.3}\\bigskip\\bigskip
+\\centerline{Version: 0.7}\\bigskip\\bigskip
 
 \\noindent
 Descot Packager is a utility to assist in the creation and use
