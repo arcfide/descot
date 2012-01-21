@@ -58,7 +58,10 @@ All Rights Reserved.}
 
 \def\chapter#1#2{%
   \vfill\break\null\vskip 48pt
-  \centerline{\chaptf #1}\bigskip\bigskip}
+% \singlecolumn
+  \centerline{\chaptf #1}\bigskip\bigskip
+% \doublecolumns
+}
 \def\section#1#2{%
   \bigskip\noindent{\sectf #1}\smallskip\nobreak\noindent}
 \def\subsection#1#2{%

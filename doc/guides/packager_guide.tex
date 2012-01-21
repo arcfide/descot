@@ -252,7 +252,7 @@ After we have created this Package file, the next step is to generate
 an SRDF file from it so that we can send this to a Descot Server.
  
 \medskip\verbatim
-$ descot-packager -p srdf prelude.dsct even_odd.dsct > even_odd.srdf
+$ descot-packager -q srdf prelude.dsct even_odd.dsct > even_odd.srdf
 |endverbatim
 \medskip
 
@@ -279,7 +279,7 @@ you an idea of the general user interface to the packager programs.
 \section{{\tt descot-packager}}{}%
 The packager program
 defined here processes packager input files and generates output to standard
-output of the given type specified by output-type. At least the 
+output of the given type specified by {\tt <output-type>}. At least the
 output-type SRDF is supported. Additional modules supporting different 
 output types can be loaded dynamically based on what is available.
 
@@ -385,7 +385,6 @@ properties given by the class default properties parameter.
 
 
 \section{Properties}{}%
-
 For Typed Properties, there are a number of common idioms for properties 
 that show up: {\tt string-property} expects a single string argument as 
 the object, {\tt date-property} expects a single date string in a standard 
